@@ -133,6 +133,28 @@ class Student {
         }
 };
 
+class Teacher {
+    string name;
+    int floor_num;
+    int class_num;
+    bool in;
+    public:
+        Teacher(char* init_name, int init_floor_num, int init_class_num)
+        :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
+        {
+            in = false;
+            cout << "A New Teacher has been created!" << endl;
+            cout << name << endl;
+            cout << "Floor " << floor_num  << ", class " << class_num << endl;
+        }
+        ~Teacher() {
+            cout << "A Teacher to be destroyed!" << endl;
+            cout << name << endl;
+            cout << "Floor " << floor_num  << ", class " << class_num << endl;
+            }
+        }
+};
+
 int main(int argc, char* argv[]) {
     if (argc != 5) {
         cerr << "Wrong number of arguments" << endl;
