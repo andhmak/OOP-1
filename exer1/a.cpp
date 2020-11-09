@@ -22,12 +22,12 @@ class Student {
             position = outside;
             cout << "A New Student has been created!" << endl;
             cout << name << endl;
-            cout << "Floor " << floor_num  << ", class " << class_num << endl;
+            cout << "Floor " << floor_num + 1 << ", class " << class_num + 1 << endl;
         }
         ~Student() {
             cout << "A Student to be destroyed!" << endl;
             cout << name << endl;
-            cout << "Floor " << floor_num  << ", class " << class_num << endl;
+            cout << "Floor " << floor_num + 1 << ", class " << class_num + 1<< endl;
             switch (position) {
                 case at_yard:
                     cout << "Situated in the yard" << endl;
@@ -48,6 +48,9 @@ class Student {
         string get_name() const {
             return name;
         }
+        void set_position(enum area new_position) {
+            position = new_position;
+        }
         void print() {
             cout << name << endl;
         }
@@ -65,13 +68,13 @@ class Teacher {
             in = false;
             cout << "A New Teacher has been created!" << endl;
             cout << name << endl;
-            cout << "Floor " << floor_num  << ", class " << class_num << endl;
+            cout << "Floor " << floor_num + 1  << ", class " << class_num + 1 << endl;
         }
         ~Teacher() {
             cout << "A Teacher to be destroyed!" << endl;
             cout << name << endl;
-            cout << "Floor " << floor_num  << ", class " << class_num << endl;
-            cout << in ? "In" : "Out of" << "the class" << endl;
+            cout << "Floor " << floor_num + 1 << ", class " << class_num  + 1 << endl;
+            cout << "Situated" << (in ? "in " : "out of ") << "the class" << endl;
         }
         void print() {
             cout << "The teacher is: " << name << endl;
@@ -105,9 +108,10 @@ class Class {
             cout << student.get_name() << " enters class!" << endl;
             students[student_num] = &student;
             student_num++;
+            student.set_position(at_class);
         }
         void print(int class_number) {
-            cout << "People in class " << class_number << " are: " << endl;
+            cout << "People in class " << class_number + 1 << " are: " << endl;
             for (int i = 0 ; i < student_num ; i++) {
                 students[i]->print();
             }
@@ -136,6 +140,7 @@ class Corridor {
             cout << student.get_name() << " enters corridor!" << endl;
             students[student_num] = &student;
             student_num++;
+            student.set_position(at_corridor);
         }
         void exit(Student& student) {
             cout << student.get_name() << " exits corridor!" << endl;
@@ -167,6 +172,7 @@ class Yard {
             cout << student.get_name() << " enters schoolyard!" << endl;
             students[student_num] = &student;
             student_num++;
+            student.set_position(at_yard);
         }
         void exit(Student& student) {
             cout << student.get_name() << " exits schoolyard!" << endl;
@@ -198,6 +204,7 @@ class Stairs {
             cout << student.get_name() << " enters stairs!" << endl;
             students[student_num] = &student;
             student_num++;
+            student.set_position(at_stairs);
         }
         void exit(Student& student) {
             cout << student.get_name() << " exits stairs!" << endl;
@@ -233,7 +240,7 @@ class Floor {
             corridor.enter(student);
         }
         void print(int floor_number) {
-            cout << "Floor number " << floor_number << " contains: " << endl;
+            cout << "Floor number " << floor_number + 1 << " contains: " << endl;
             corridor.print();
             for (int i = 0 ; i < 6 ; i++) {
                 classes[i]->print(i);
@@ -287,8 +294,15 @@ int main(int argc, char* argv[]) {
     }
     srand(time(NULL));
     School school(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
-    Student student(names[rand() % 36], 1, 3);
-    Teacher teacher(names[rand() % 36], 2, 5);
-    school.enter(student);
+    const int student_num = 360;
+    Student* students[student_num];
+    Teacher* teachers[18];
+    for (int i = 0 ; i < student_num ; i++) {
+        students[i] = new Student(names[rand() % 36], rand() % 3, rand() % 6);
+    }
+    for (int i = 0 ; i < 18 ; i++) {
+        teachers[i] = new Teacher(names[rand() % 36], i / 6, i % 6);
+    }
+    school.enter(*(students[1]));
     return 0;
 }
