@@ -54,6 +54,12 @@ class Student {
         void print() {
             cout << name << endl;
         }
+        int get_floor_num() const {
+            return floor_num;
+        }
+        int get_class_num() const {
+            return class_num;
+        }
 };
 
 class Teacher {
@@ -88,6 +94,9 @@ class Teacher {
         int get_class_num() const {
             return class_num;
         }
+        bool is_in() const {
+            return in;
+        }
 };
 
 class Class {
@@ -99,10 +108,12 @@ class Class {
         Class(int init_capacity) : capacity(init_capacity) {
             students = new Student*[init_capacity];
             student_num = 0;
+            teacher = NULL;
             cout << "A New Class has been created!" << endl;
         }
         ~Class() {
             cout << "A Class to be destroyed!" << endl;
+            delete students;
         }
         void enter(Student& student) {
             cout << student.get_name() << " enters class!" << endl;
@@ -115,11 +126,16 @@ class Class {
             for (int i = 0 ; i < student_num ; i++) {
                 students[i]->print();
             }
-            teacher->print();
+            if (teacher != NULL) {
+                teacher->print();
+            }
         }
         void place(Teacher& teacher_in) {
             teacher = &teacher_in;
             teacher_in.set_in();
+        }
+        bool full() const {
+            return (capacity == student_num) || (teacher != NULL);
         }
 };
 
@@ -135,6 +151,7 @@ class Corridor {
         }
         ~Corridor() {
             cout << "A Corridor to be destroyed!" << endl;
+            delete students;
         }
         void enter(Student& student) {
             cout << student.get_name() << " enters corridor!" << endl;
@@ -145,13 +162,15 @@ class Corridor {
         void exit(Student& student) {
             cout << student.get_name() << " exits corridor!" << endl;
             student_num--;
-            students[student_num] = NULL;   //unnecessary
         }
         void print() {
             cout << "People in corridor are: " << endl;
             for (int i = 0 ; i < student_num ; i++) {
                 students[i]->print();
             }
+        }
+        bool full() const {
+            return capacity == student_num;
         }
 };
 
@@ -167,6 +186,7 @@ class Yard {
         }
         ~Yard() {
             cout << "A Yard to be destroyed!" << endl;
+            delete students;
         }
         void enter(Student& student) {
             cout << student.get_name() << " enters schoolyard!" << endl;
@@ -177,13 +197,15 @@ class Yard {
         void exit(Student& student) {
             cout << student.get_name() << " exits schoolyard!" << endl;
             student_num--;
-            students[student_num] = NULL;   //unnecessary
         }
         void print() {
             cout << "People in schoolyard are: " << endl;
             for (int i = 0 ; i < student_num ; i++) {
                 students[i]->print();
             }
+        }
+        bool full() const {
+            return capacity == student_num;
         }
 };
 
@@ -199,6 +221,7 @@ class Stairs {
         }
         ~Stairs() {
             cout << "Stairs to be destroyed!" << endl;
+            delete students;
         }
         void enter(Student& student) {
             cout << student.get_name() << " enters stairs!" << endl;
@@ -209,13 +232,15 @@ class Stairs {
         void exit(Student& student) {
             cout << student.get_name() << " exits stairs!" << endl;
             student_num--;
-            students[student_num] = NULL;   //unnecessary
         }
         void print() {
             cout << "People in stairs are: " << endl;
             for (int i = 0 ; i < student_num ; i++) {
                 students[i]->print();
             }
+        }
+        bool full() const {
+            return capacity == student_num;
         }
 };
 
@@ -224,20 +249,24 @@ class Floor {
     Corridor corridor;
     public:
         Floor(int cclass, int ccorr) : corridor(ccorr) {
-            for (int i = 0 ; i < 3 ; i++) {
+            for (int i = 0 ; i < 6 ; i++) {
                 classes[i] = new Class(cclass);
             }
             cout << "A New Floor has been created!" << endl;
         }
         ~Floor() {
             cout << "A Floor to be destroyed!" << endl;
-            for (int i = 0 ; i < 3 ; i++) {
+            for (int i = 0 ; i < 6 ; i++) {
                 delete classes[i];
             }
         }
         void enter(Student& student) {
             cout << student.get_name() << " enters floor!" << endl;
             corridor.enter(student);
+            if (classes[student.get_floor_num()]->full() == false) {
+                corridor.exit(student);
+                classes[student.get_floor_num()]->enter(student);
+            }
         }
         void print(int floor_number) {
             cout << "Floor number " << floor_number + 1 << " contains: " << endl;
@@ -248,6 +277,9 @@ class Floor {
         }
         void place(Teacher& teacher) {
             classes[teacher.get_class_num()]->place(teacher);
+        }
+        bool can_fit() {
+            return !corridor.full();
         }
 };
 
@@ -270,9 +302,26 @@ class School {
                 delete floors[i];
             }
         }
-        void enter(Student& student) {
+        bool enter(Student& student) {
             cout << student.get_name() << " enters school!" << endl;
+            if (yard.full()) {
+                return false;
+            }
             yard.enter(student);
+            if (yard.full()) {
+                if (stairs.full()) {
+                    return true;
+                }
+                yard.exit(student);
+                stairs.enter(student);
+                if (stairs.full()) {
+                    if (floors[student.get_floor_num()]->can_fit()) {
+                        stairs.exit(student);
+                        floors[student.get_floor_num()]->enter(student);
+                    }
+                }
+            }
+            return true;
         }
         void print() {
             cout << "School life consists of: " << endl;
@@ -293,16 +342,39 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     srand(time(NULL));
-    School school(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
-    const int student_num = 360;
+    int cclass = atoi(argv[1]), cyard = atoi(argv[2]), cstair = atoi(argv[3]), ccorr = atoi(argv[4]);
+    School school(cclass, cyard, cstair, ccorr);
+    int student_num = cclass*18 + cyard + cstair + ccorr*3 + 5;
     Student* students[student_num];
     Teacher* teachers[18];
+    Teacher* to_be_placed;
     for (int i = 0 ; i < student_num ; i++) {
         students[i] = new Student(names[rand() % 36], rand() % 3, rand() % 6);
     }
     for (int i = 0 ; i < 18 ; i++) {
         teachers[i] = new Teacher(names[rand() % 36], i / 6, i % 6);
     }
-    school.enter(*(students[1]));
+    int teacher_num;
+    for (int i = 0 ; i < student_num ; i++) {
+        if (!school.enter(*students[i])) {
+            break;
+        }
+        if (!(rand() % (cclass*18))) {
+            teacher_num = rand() % 18;
+            for (int j = 0 ; j < teacher_num ; j++) {
+                to_be_placed = teachers[rand() % 18];
+                if (to_be_placed->is_in() == false) {
+                    school.place(*to_be_placed);
+                }
+            }
+        }
+    }
+    school.print();
+    for (int i = 0 ; i < student_num ; i++) {
+        delete students[i];
+    }
+    for (int i = 0 ; i < 18 ; i++) {
+        delete teachers[i];
+    }
     return 0;
 }
