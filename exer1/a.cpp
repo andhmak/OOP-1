@@ -51,7 +51,7 @@ class Student {
         void set_position(enum area new_position) {
             position = new_position;
         }
-        void print() {
+        void print() const {
             cout << name << endl;
         }
         int get_floor_num() const {
@@ -80,9 +80,9 @@ class Teacher {
             cout << "A Teacher to be destroyed!" << endl;
             cout << name << endl;
             cout << "Floor " << floor_num + 1 << ", class " << class_num  + 1 << endl;
-            cout << "Situated" << (in ? "in " : "out of ") << "the class" << endl;
+            cout << "Situated " << (in ? "in " : "outside ") << "the class" << endl;
         }
-        void print() {
+        void print() const {
             cout << "The teacher is: " << name << endl;
         }
         void set_in() {
@@ -121,7 +121,7 @@ class Class {
             student_num++;
             student.set_position(at_class);
         }
-        void print(int class_number) {
+        void print(int class_number) const {
             cout << "People in class " << class_number + 1 << " are: " << endl;
             for (int i = 0 ; i < student_num ; i++) {
                 students[i]->print();
@@ -163,7 +163,7 @@ class Corridor {
             cout << student.get_name() << " exits corridor!" << endl;
             student_num--;
         }
-        void print() {
+        void print() const {
             cout << "People in corridor are: " << endl;
             for (int i = 0 ; i < student_num ; i++) {
                 students[i]->print();
@@ -198,7 +198,7 @@ class Yard {
             cout << student.get_name() << " exits schoolyard!" << endl;
             student_num--;
         }
-        void print() {
+        void print() const {
             cout << "People in schoolyard are: " << endl;
             for (int i = 0 ; i < student_num ; i++) {
                 students[i]->print();
@@ -233,7 +233,7 @@ class Stairs {
             cout << student.get_name() << " exits stairs!" << endl;
             student_num--;
         }
-        void print() {
+        void print() const {
             cout << "People in stairs are: " << endl;
             for (int i = 0 ; i < student_num ; i++) {
                 students[i]->print();
@@ -268,7 +268,7 @@ class Floor {
                 classes[student.get_floor_num()]->enter(student);
             }
         }
-        void print(int floor_number) {
+        void print(int floor_number) const {
             cout << "Floor number " << floor_number + 1 << " contains: " << endl;
             corridor.print();
             for (int i = 0 ; i < 6 ; i++) {
@@ -278,7 +278,7 @@ class Floor {
         void place(Teacher& teacher) {
             classes[teacher.get_class_num()]->place(teacher);
         }
-        bool can_fit() {
+        bool can_fit() const {
             return !corridor.full();
         }
 };
@@ -323,7 +323,7 @@ class School {
             }
             return true;
         }
-        void print() {
+        void print() const {
             cout << "School life consists of: " << endl;
             yard.print();
             stairs.print();
