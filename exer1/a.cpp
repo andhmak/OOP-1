@@ -263,9 +263,9 @@ class Floor {
         void enter(Student& student) {
             cout << student.get_name() << " enters floor!" << endl;
             corridor.enter(student);
-            if (classes[student.get_floor_num()]->full() == false) {
+            if (classes[student.get_class_num()]->full() == false) {
                 corridor.exit(student);
-                classes[student.get_floor_num()]->enter(student);
+                classes[student.get_class_num()]->enter(student);
             }
         }
         void print(int floor_number) const {
@@ -308,18 +308,14 @@ class School {
                 return false;
             }
             yard.enter(student);
-            if (yard.full()) {
-                if (stairs.full()) {
-                    return true;
-                }
-                yard.exit(student);
-                stairs.enter(student);
-                if (stairs.full()) {
-                    if (floors[student.get_floor_num()]->can_fit()) {
-                        stairs.exit(student);
-                        floors[student.get_floor_num()]->enter(student);
-                    }
-                }
+            if (stairs.full()) {
+                return true;
+            }
+            yard.exit(student);
+            stairs.enter(student);
+            if (floors[student.get_floor_num()]->can_fit()) {
+                stairs.exit(student);
+                floors[student.get_floor_num()]->enter(student);
             }
             return true;
         }
