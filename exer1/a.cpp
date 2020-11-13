@@ -159,9 +159,13 @@ class Corridor {
             student_num++;
             student.set_position(at_corridor);
         }
-        void exit(Student& student) {
-            cout << student.get_name() << " exits corridor!" << endl;
+        Student* exit() {
+            if (student_num == 0) {
+                return NULL;
+            }
+            cout << students[student_num - 1]->get_name() << " exits corridor!" << endl;
             student_num--;
+            return students[student_num - 1];
         }
         void print() const {
             cout << "People in corridor are: " << endl;
@@ -194,9 +198,13 @@ class Yard {
             student_num++;
             student.set_position(at_yard);
         }
-        void exit(Student& student) {
-            cout << student.get_name() << " exits schoolyard!" << endl;
+        Student* exit() {
+            if (student_num == 0) {
+                return NULL;
+            }
+            cout << students[student_num - 1]->get_name() << " exits schoolyard!" << endl;
             student_num--;
+            return students[student_num - 1];
         }
         void print() const {
             cout << "People in schoolyard are: " << endl;
@@ -229,9 +237,13 @@ class Stairs {
             student_num++;
             student.set_position(at_stairs);
         }
-        void exit(Student& student) {
-            cout << student.get_name() << " exits stairs!" << endl;
+        Student* exit() {
+            if (student_num == 0) {
+                return NULL;
+            }
+            cout << students[student_num - 1]->get_name() << " exits stairs!" << endl;
             student_num--;
+            return students[student_num - 1];
         }
         void print() const {
             cout << "People in stairs are: " << endl;
@@ -264,7 +276,7 @@ class Floor {
             cout << student.get_name() << " enters floor!" << endl;
             corridor.enter(student);
             if (classes[student.get_class_num()]->full() == false) {
-                corridor.exit(student);
+                corridor.exit();
                 classes[student.get_class_num()]->enter(student);
             }
         }
@@ -311,13 +323,33 @@ class School {
             if (stairs.full()) {
                 return true;
             }
-            yard.exit(student);
+            yard.exit();
             stairs.enter(student);
             if (floors[student.get_floor_num()]->can_fit()) {
-                stairs.exit(student);
+                stairs.exit();
                 floors[student.get_floor_num()]->enter(student);
             }
             return true;
+        }
+        bool enter(Student** students, int size) {
+            int ammount_in = 0;
+            Student* to_enter;
+            if (yard.full()) {
+                return false;
+            }
+            for ( ; yard.full() == false ; ammount_in++) {
+                yard.enter(*students[ammount_in]);
+                if (ammount_in == size) {
+                    return true;
+                }
+            }
+            for (int i = 0 ; stairs.full() == false ; i++) {
+                to_enter = yard.exit();
+                if (to_enter == NULL) {
+                    break;
+                }
+                stairs.enter(*to_enter);
+            }
         }
         void print() const {
             cout << "School life consists of: " << endl;
@@ -332,6 +364,17 @@ class School {
         }
 };
 
+void shuffle(Student* array[], int size) {
+    int new_pos;
+    Student* temp;
+	for (int i = 0; i < size; i++) {
+		new_pos = i + rand() / (RAND_MAX / (size - i) + 1);
+		temp = array[new_pos];
+		array[new_pos] = array[i];
+		array[i] = temp;
+	}
+}
+
 int main(int argc, char* argv[]) {
     if (argc != 5) {
         cerr << "Wrong number of arguments" << endl;
@@ -340,13 +383,18 @@ int main(int argc, char* argv[]) {
     srand(time(NULL));
     int cclass = atoi(argv[1]), cyard = atoi(argv[2]), cstair = atoi(argv[3]), ccorr = atoi(argv[4]);
     School school(cclass, cyard, cstair, ccorr);
-    int student_num = cclass*18 + cyard + cstair + ccorr*3 + 5;
+    int student_num = cclass*18;
     Student* students[student_num];
     Teacher* teachers[18];
     Teacher* to_be_placed;
-    for (int i = 0 ; i < student_num ; i++) {
-        students[i] = new Student(names[rand() % 36], rand() % 3, rand() % 6);
+    for (int i = 0 ; i < 3 ; i++) {
+        for (int j = 0 ; j < 6 ; j++) {
+            for (int k = 0 ; k < cclass ; k++) {
+                students[cclass*6*i + cclass*j + k] = new Student(names[rand() % 36], i, j);
+            }
+        }
     }
+    shuffle(students, student_num);
     for (int i = 0 ; i < 18 ; i++) {
         teachers[i] = new Teacher(names[rand() % 36], i / 6, i % 6);
     }
@@ -355,8 +403,8 @@ int main(int argc, char* argv[]) {
         if (!school.enter(*students[i])) {
             break;
         }
-        if (!(rand() % (cclass*18))) {
-            teacher_num = rand() % 18;
+        if (!(rand() % (student_num/8))) {
+            teacher_num = rand() % 4;
             for (int j = 0 ; j < teacher_num ; j++) {
                 to_be_placed = teachers[rand() % 18];
                 if (to_be_placed->is_in() == false) {
