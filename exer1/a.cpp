@@ -358,6 +358,15 @@ class School {
                 }
                 stairs.enter(*to_enter);
             }
+            for (int i = 0 ; i < 3 ; i++) {
+                for (int j = 0 ; floors[i]->can_fit() ; j++) {
+                    to_enter = stairs.exit(j);
+                    if (to_enter == NULL) {
+                        break;
+                    }
+                    floors[i]->enter(*to_enter);
+                }
+            }
         }
         void print() const {
             cout << "School life consists of: " << endl;
