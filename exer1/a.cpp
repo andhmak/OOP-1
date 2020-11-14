@@ -237,9 +237,17 @@ class Stairs {
             student_num++;
             student.set_position(at_stairs);
         }
-        Student* exit() {
+        Student* exit(int floor_num) {
+            Student* temp;
             if (student_num == 0) {
                 return NULL;
+            }
+            for (int i = student_num - 1 ; i >= 0 ; i--) {
+                if (students[i]->get_floor_num() == floor_num) {
+                    temp = students[i];
+                    students[i] = students[student_num - 1];
+                    students[student_num - 1] = temp;
+                }
             }
             cout << students[student_num - 1]->get_name() << " exits stairs!" << endl;
             student_num--;
