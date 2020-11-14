@@ -11,12 +11,12 @@ enum area {
 };
 
 class Student {
-    string name;
+    int name;
     int floor_num;
     int class_num;
     enum area position;
     public:
-        Student(const char* init_name, int init_floor_num, int init_class_num)
+        Student(int init_name, int init_floor_num, int init_class_num)
         :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
         {
             position = outside;
@@ -45,7 +45,7 @@ class Student {
                     cout << "Situated outside" << endl;
             }
         }
-        string get_name() const {
+        int get_name() const {
             return name;
         }
         void set_position(enum area new_position) {
@@ -334,7 +334,7 @@ class School {
             yard.exit();
             stairs.enter(student);
             if (floors[student.get_floor_num()]->can_fit()) {
-                stairs.exit();
+                stairs.exit(student.get_floor_num());
                 floors[student.get_floor_num()]->enter(student);
             }
             return true;
@@ -342,29 +342,31 @@ class School {
         bool enter(Student** students, int size) {
             int ammount_in = 0;
             Student* to_enter;
-            if (yard.full()) {
-                return false;
-            }
-            for ( ; yard.full() == false ; ammount_in++) {
-                yard.enter(*students[ammount_in]);
-                if (ammount_in == size) {
-                    return true;
+            while(true) {
+                if (yard.full()) {
+                    return false;
                 }
-            }
-            for (int i = 0 ; stairs.full() == false ; i++) {
-                to_enter = yard.exit();
-                if (to_enter == NULL) {
-                    break;
+                for ( ; yard.full() == false ; ammount_in++) {
+                    yard.enter(*students[ammount_in]);
+                    if (ammount_in == size) {
+                        return true;
+                    }
                 }
-                stairs.enter(*to_enter);
-            }
-            for (int i = 0 ; i < 3 ; i++) {
-                for (int j = 0 ; floors[i]->can_fit() ; j++) {
-                    to_enter = stairs.exit(j);
+                for (int i = 0 ; stairs.full() == false ; i++) {
+                    to_enter = yard.exit();
                     if (to_enter == NULL) {
                         break;
                     }
-                    floors[i]->enter(*to_enter);
+                    stairs.enter(*to_enter);
+                }
+                for (int i = 0 ; i < 3 ; i++) {
+                    for (int j = 0 ; floors[i]->can_fit() ; j++) {
+                        to_enter = stairs.exit(j);
+                        if (to_enter == NULL) {
+                            break;
+                        }
+                        floors[i]->enter(*to_enter);
+                    }
                 }
             }
         }
@@ -407,7 +409,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0 ; i < 3 ; i++) {
         for (int j = 0 ; j < 6 ; j++) {
             for (int k = 0 ; k < cclass ; k++) {
-                students[cclass*6*i + cclass*j + k] = new Student(names[rand() % 36], i, j);
+                students[cclass*6*i + cclass*j + k] = new Student(cclass*6*i + cclass*j + k, i, j);
             }
         }
     }
@@ -417,8 +419,14 @@ int main(int argc, char* argv[]) {
     }
     int teacher_num;
     for (int i = 0 ; i < student_num ; i++) {
-        if (!school.enter(*students[i])) {
-            break;
+        if (rand() % 2) {
+            if (!school.enter(*students[i])) {
+                break;
+            }
+        }
+        else {
+            school.enter(students + i, student_num/9);
+            i += student_num/9 - 1;
         }
         if (!(rand() % (student_num/8))) {
             teacher_num = rand() % 4;
