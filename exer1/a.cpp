@@ -11,12 +11,12 @@ enum area {
 };
 
 class Student {
-    int name;
+    string name;
     int floor_num;
     int class_num;
     enum area position;
     public:
-        Student(int init_name, int init_floor_num, int init_class_num)
+        Student(const char* init_name, int init_floor_num, int init_class_num)
         :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
         {
             position = outside;
@@ -45,7 +45,7 @@ class Student {
                     cout << "Situated outside" << endl;
             }
         }
-        int get_name() const {
+        string get_name() const {
             return name;
         }
         void set_position(enum area new_position) {
@@ -165,7 +165,7 @@ class Corridor {
             }
             cout << students[student_num - 1]->get_name() << " exits corridor!" << endl;
             student_num--;
-            return students[student_num - 1];
+            return students[student_num];
         }
         void print() const {
             cout << "People in corridor are: " << endl;
@@ -204,7 +204,7 @@ class Yard {
             }
             cout << students[student_num - 1]->get_name() << " exits schoolyard!" << endl;
             student_num--;
-            return students[student_num - 1];
+            return students[student_num];
         }
         void print() const {
             cout << "People in schoolyard are: " << endl;
@@ -239,19 +239,17 @@ class Stairs {
         }
         Student* exit(int floor_num) {
             Student* temp;
-            if (student_num == 0) {
-                return NULL;
-            }
             for (int i = student_num - 1 ; i >= 0 ; i--) {
                 if (students[i]->get_floor_num() == floor_num) {
                     temp = students[i];
                     students[i] = students[student_num - 1];
                     students[student_num - 1] = temp;
+                    cout << students[student_num - 1]->get_name() << " exits stairs!" << endl;
+                    student_num--;
+                    return students[student_num];
                 }
             }
-            cout << students[student_num - 1]->get_name() << " exits stairs!" << endl;
-            student_num--;
-            return students[student_num - 1];
+            return NULL;
         }
         void print() const {
             cout << "People in stairs are: " << endl;
@@ -340,33 +338,37 @@ class School {
             return true;
         }
         bool enter(Student** students, int size) {
+            for (int i = 0 ; i < size ; i++) {
+                cout << students[i]->get_name() << " enters school!" << endl;
+            }
             int ammount_in = 0;
+            bool stagnated;
             Student* to_enter;
             while(true) {
-                if (yard.full()) {
-                    return false;
-                }
-                for ( ; yard.full() == false ; ammount_in++) {
+                stagnated = true;
+                for ( ; (yard.full() == false) && (ammount_in != size) ; ammount_in++) {
                     yard.enter(*students[ammount_in]);
-                    if (ammount_in == size) {
-                        return true;
-                    }
                 }
-                for (int i = 0 ; stairs.full() == false ; i++) {
+                while (stairs.full() == false) {
                     to_enter = yard.exit();
                     if (to_enter == NULL) {
                         break;
                     }
                     stairs.enter(*to_enter);
+                    stagnated = false;
                 }
                 for (int i = 0 ; i < 3 ; i++) {
-                    for (int j = 0 ; floors[i]->can_fit() ; j++) {
-                        to_enter = stairs.exit(j);
+                    while (floors[i]->can_fit()) {
+                        to_enter = stairs.exit(i);
                         if (to_enter == NULL) {
                             break;
                         }
                         floors[i]->enter(*to_enter);
+                        stagnated = false;
                     }
+                }
+                if (stagnated) {
+                    return ammount_in == size;
                 }
             }
         }
@@ -409,7 +411,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0 ; i < 3 ; i++) {
         for (int j = 0 ; j < 6 ; j++) {
             for (int k = 0 ; k < cclass ; k++) {
-                students[cclass*6*i + cclass*j + k] = new Student(cclass*6*i + cclass*j + k, i, j);
+                students[cclass*6*i + cclass*j + k] = new Student(names[rand() % 36], i, j);
             }
         }
     }
@@ -419,7 +421,7 @@ int main(int argc, char* argv[]) {
     }
     int teacher_num;
     for (int i = 0 ; i < student_num ; i++) {
-        if (rand() % 2) {
+        if ((rand() % 2) || (i + student_num/9 > student_num)) {
             if (!school.enter(*students[i])) {
                 break;
             }
