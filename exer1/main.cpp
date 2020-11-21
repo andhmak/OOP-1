@@ -63,6 +63,7 @@ int main(int argc, char* argv[]) {
     }
     school.print();
     for (int i = 0 ; i < student_num ; i++) {
+        students[i]->print();
         delete students[i];
     }
     for (int i = 0 ; i < 18 ; i++) {

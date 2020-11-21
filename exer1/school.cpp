@@ -92,7 +92,7 @@ Yard::Yard(int init_capacity) : capacity(init_capacity) {
 
 Yard::~Yard() {
     cout << "A Yard to be destroyed!" << endl;
-    delete students;
+    delete[] students;
 }
 
 void Yard::enter(Student& student) {
@@ -131,7 +131,7 @@ Stairs::Stairs(int init_capacity) : capacity(init_capacity) {
 
 Stairs::~Stairs() {
     cout << "Stairs to be destroyed!" << endl;
-    delete students;
+    delete[] students;
 }
 
 void Stairs::enter(Student& student) {
@@ -176,7 +176,7 @@ Class::Class(int init_capacity) : capacity(init_capacity) {
 
 Class::~Class() {
     cout << "A Class to be destroyed!" << endl;
-    delete students;
+    delete[] students;
 }
 
 void Class::enter(Student& student) {
@@ -212,7 +212,7 @@ Corridor::Corridor(int init_capacity) : capacity(init_capacity) {
 }
 Corridor::~Corridor() {
     cout << "A Corridor to be destroyed!" << endl;
-    delete students;
+    delete[] students;
 }
 
 void Corridor::enter(Student& student) {
