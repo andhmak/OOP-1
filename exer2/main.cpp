@@ -230,6 +230,9 @@ class School {
                 queues[0]->append(extra_pairs, extra_pair_ammount);
             }
         }
+        void mess(int ammount) {
+            
+        }
         void print() const {
             for (int i = 0 ; i < size ; i++) {
                 queues[i]->print(tquiet, tmessy);
@@ -274,11 +277,8 @@ int main(int argc, char* argv[]) {
     School school(queues, k, tquiet, tmessy);
     school.print();
     srand(time(NULL));
-    int messy_number;
-
     for (int i = 0 ; i < l ; i++) {
-        messy_number = rand() % (student_num/10);
-
+        school.mess(rand() % (student_num/10));
     }
     school.print();
     for (int i = 0 ; i < k ; i++) {
