@@ -34,26 +34,6 @@ Student::~Student() {
     }
 }
 
-string Student::get_name() const {
-    return name;
-}
-
-void Student::set_position(enum area new_position) {
-    position = new_position;
-}
-
-void Student::print() const {
-    cout << name << endl;
-}
-
-int Student::get_floor_num() const {
-    return floor_num;
-}
-
-int Student::get_class_num() const {
-    return class_num;
-}
-
 Teacher::Teacher(const char* init_name, int init_floor_num, int init_class_num)
 :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
 {
@@ -62,26 +42,12 @@ Teacher::Teacher(const char* init_name, int init_floor_num, int init_class_num)
     cout << name << endl;
     cout << "Floor " << floor_num + 1  << ", class " << class_num + 1 << endl;
 }
+
 Teacher::~Teacher() {
     cout << "A Teacher to be destroyed!" << endl;
     cout << name << endl;
     cout << "Floor " << floor_num + 1 << ", class " << class_num  + 1 << endl;
     cout << "Situated " << (in ? "in " : "outside ") << "the class" << endl;
-}
-void Teacher::print() const {
-    cout << "The teacher is: " << name << endl;
-}
-void Teacher::set_in() {
-    in = true;
-}
-int Teacher::get_floor_num() const {
-    return floor_num;
-}
-int Teacher::get_class_num() const {
-    return class_num;
-}
-bool Teacher::is_in() const {
-    return in;
 }
 
 Yard::Yard(int init_capacity) : capacity(init_capacity) {
@@ -117,11 +83,6 @@ void Yard::print() const {
         students[i]->print();
     }
 }
-
-bool Yard::full() const {
-    return capacity == student_num;
-}
-
 
 Stairs::Stairs(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
@@ -163,10 +124,6 @@ void Stairs::print() const {
     }
 }
 
-bool Stairs::full() const {
-    return capacity == student_num;
-}
-
 Class::Class(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
@@ -199,10 +156,6 @@ void Class::print(int class_number) const {
 void Class::place(Teacher& teacher_in) {
     teacher = &teacher_in;
     teacher_in.set_in();
-}
-
-bool Class::full() const {
-    return (capacity == student_num) || (teacher != NULL);
 }
 
 Corridor::Corridor(int init_capacity) : capacity(init_capacity) {
@@ -238,10 +191,6 @@ void Corridor::print() const {
     }
 }
 
-bool Corridor::full() const {
-    return capacity == student_num;
-}
-
 Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {
     for (int i = 0 ; i < 6 ; i++) {
         classes[i] = new Class(cclass);
@@ -271,14 +220,6 @@ void Floor::print(int floor_number) const {
     for (int i = 0 ; i < 6 ; i++) {
         classes[i]->print(i);
     }
-}
-
-void Floor::place(Teacher& teacher) {
-    classes[teacher.get_class_num()]->place(teacher);
-}
-
-bool Floor::can_fit() const {
-    return !corridor.full();
 }
 
 School::School(int cclass, int cyard, int cstair, int ccorr)
@@ -358,8 +299,4 @@ void School::print() const {
     for (int i = 0 ; i < 3 ; i++) {
         floors[i]->print(i);
     }
-}
-
-void School::place(Teacher& teacher) {
-    floors[teacher.get_floor_num()]->place(teacher);
 }

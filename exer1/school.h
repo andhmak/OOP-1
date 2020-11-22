@@ -10,11 +10,11 @@ class Student {
     public:
         Student(const char* init_name, int init_floor_num, int init_class_num);
         ~Student();
-        std::string get_name() const;
-        void set_position(enum area new_position);
-        void print() const;
-        int get_floor_num() const;
-        int get_class_num() const;
+        std::string get_name() const { return name; }
+        void set_position(enum area new_position) { position = new_position; }
+        void print() const { std::cout << name << std::endl; }
+        int get_floor_num() const { return floor_num; }
+        int get_class_num() const { return class_num; }
 };
 
 class Teacher {
@@ -25,11 +25,11 @@ class Teacher {
     public:
         Teacher(const char* init_name, int init_floor_num, int init_class_num);
         ~Teacher();
-        void print() const;
-        void set_in();
-        int get_floor_num() const;
-        int get_class_num() const;
-        bool is_in() const;
+        void print() const { std::cout << "The teacher is: " << name << std::endl; }
+        void set_in() { in = true; }
+        int get_floor_num() const { return floor_num; }
+        int get_class_num() const { return class_num; }
+        bool is_in() const { return in; }
 };
 
 class Yard {
@@ -42,7 +42,7 @@ class Yard {
         void enter(Student& student);
         Student* exit();
         void print() const;
-        bool full() const;
+        bool full() const { return capacity == student_num; }
 };
 
 class Stairs {
@@ -55,7 +55,7 @@ class Stairs {
         void enter(Student& student);
         Student* exit(int floor_num);
         void print() const;
-        bool full() const;
+        bool full() const { return capacity == student_num; }
 };
 
 class Class {
@@ -69,7 +69,7 @@ class Class {
         void enter(Student& student);
         void print(int class_number) const;
         void place(Teacher& teacher_in);
-        bool full() const;
+        bool full() const { return (capacity == student_num) || (teacher != NULL); }
 };
 
 class Corridor {
@@ -82,7 +82,7 @@ class Corridor {
         void enter(Student& student);
         Student* exit();
         void print() const;
-        bool full() const;
+        bool full() const { return capacity == student_num; }
 };
 
 class Floor {
@@ -93,8 +93,8 @@ class Floor {
         ~Floor();
         void enter(Student& student);
         void print(int floor_number) const;
-        void place(Teacher& teacher);
-        bool can_fit() const;
+        void place(Teacher& teacher) { classes[teacher.get_class_num()]->place(teacher); }
+        bool can_fit() const { return !corridor.full(); }
 };
 
 class School {
@@ -107,5 +107,5 @@ class School {
         bool enter(Student& student);
         bool enter(Student** students, int size);
         void print() const;
-        void place(Teacher& teacher);
+        void place(Teacher& teacher) { floors[teacher.get_floor_num()]->place(teacher); }
 };
