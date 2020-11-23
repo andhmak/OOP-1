@@ -59,11 +59,12 @@ class Student {
     bool male;
     public:
         Student(const char* init_name, int init_classroom_id, bool init_male)
-        :   name(init_name), classroom_id(init_classroom_id), male(init_male) {
-            cout << "New student " << name << (male ? " male" : " female") << endl;
-        }
+        :   name(init_name), classroom_id(init_classroom_id), male(init_male) { }
         bool is_male() const {
             return male;
+        }
+        int get_classroom_id() const {
+            return classroom_id;
         }
         void print() const {
             cout << name << ", class " << classroom_id + 1 << (male ? ", male" : ", female") << endl;
@@ -99,25 +100,23 @@ class Pair {
             return this;
         }
         void swap(Pair* other, bool male) {
-            cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
-            Student *temp, *first_to_swap, *second_to_swap;
+            Student *temp, **first_to_swap, **second_to_swap;
             if (((this->first != NULL) && (this->first->is_male() == male)) || ((this->first == NULL) && (this->second->is_male() != male))) {
-                first_to_swap = this->first;
+                first_to_swap = &this->first;
             }
             else {
-                first_to_swap = this->second;
+                first_to_swap = &this->second;
             }
             if (((other->first != NULL) && (other->first->is_male() == male)) || ((other->first == NULL) && (other->second->is_male() != male))) {
-                second_to_swap = other->first;
+                second_to_swap = &other->first;
             }
             else {
-                second_to_swap = other->second;
+                second_to_swap = &other->second;
             }
-            first_to_swap->print();
-            temp = first_to_swap;
-            first_to_swap = second_to_swap;
-            second_to_swap = temp;
-            cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+            (*first_to_swap)->print();
+            temp = *first_to_swap;
+            *first_to_swap = *second_to_swap;
+            *second_to_swap = temp;
         }
         Student* get_student(bool male) const {
             if ((first != NULL) && (first->is_male() == male)) {
@@ -235,6 +234,9 @@ class Queue {
             pairs = new_pairs;
             size += extra_ammount;
         }
+        void increase_messiness(int amount) {
+            messiness += amount;
+        }
         bool excess_male() const {
             if (pairs[size - 1]->only_male()) {
                 return true;
@@ -274,7 +276,7 @@ class School {
     int tquiet, tmessy;
     public:
         School(Queue** init_queues, int queue_ammount, int init_tquiet, int init_messy)
-        :   queues(init_queues), tquiet(init_tquiet), tmessy(init_tquiet), size(queue_ammount) {
+        :   queues(init_queues), tquiet(init_tquiet), tmessy(init_messy), size(queue_ammount) {
             int extra_males = 0, extra_females = 0;
             for (int i = 0 ; i < queue_ammount ; i++) {
                 if (queues[i]->excess_male()) {
@@ -319,12 +321,10 @@ class School {
             const int messiness_chance = 5;
             StudentList* list;
             for (int i = 0 ; i < size ; i++) {
-                cout << i << endl;
                 list = new StudentList;
                 int continuous_messy = 0;
                 bool enough_continuous = false;
                 for (int j = 0 ; j < queues[i]->get_size() ; j++) {
-                    cout << "   " << j << endl;
                     if (!(rand() % messiness_chance)) {
                         continuous_messy++;
                         if (queues[i]->get_ith(j)->only_male()) {
@@ -345,8 +345,8 @@ class School {
                     }
                 }
                 if (list->get_size() <= 2) {
-                    cout << "case 1" << endl;
                     int other_pair_position;
+                    Pair *messy_pair, *other_pair;
                     for
                     (StudentListNode* messy_student = list->get_first() ;
                     messy_student != NULL ;
@@ -358,26 +358,36 @@ class School {
                                 break;
                             }
                         }
-                        queues[i]->get_ith(messy_student->get_position())->swap(queues[i]->get_ith(other_pair_position), messy_student->is_male());
+                        messy_pair = queues[i]->get_ith(messy_student->get_position());
+                        other_pair = queues[i]->get_ith(other_pair_position);
+                        cout << "Student being moved: " << endl;
+                        messy_pair->swap(other_pair, messy_student->is_male());
+                        queues[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(1);
+                        queues[i]->print(tquiet, tmessy);
                     }
                 }
                 else if (!enough_continuous) {
-                    cout << "case 2" << endl;
                     int other_pair_position;
                     int other_queue = (i < (size - 1)) ? i + 1 : 0;
+                    Pair *messy_pair, *other_pair;
                     for
                     (StudentListNode* messy_student = list->get_first() ;
                     messy_student != NULL ;
                     messy_student = messy_student->get_next())
                     {
+                        messy_pair = queues[i]->get_ith(messy_student->get_position());
                         other_pair_position = rand() % queues[other_queue]->get_size();
-                        queues[i]->get_ith(messy_student->get_position())->swap(queues[other_queue]->get_ith(other_pair_position), messy_student->is_male());
+                        other_pair = queues[other_queue]->get_ith(other_pair_position);
+                        messy_pair->swap(other_pair, messy_student->is_male());
+                        queues[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(2);
+                        queues[i]->print(tquiet, tmessy);
+                        queues[other_queue]->print(tquiet, tmessy);
                     }
                 }
                 else {
-                    cout << "case 1" << endl;
                     int other_pair_position;
                     int other_queue;
+                    Pair *messy_pair, *other_pair;
                     for
                     (StudentListNode* messy_student = list->get_first() ;
                     messy_student != NULL ;
@@ -389,8 +399,13 @@ class School {
                                 break;
                             }
                         }
+                        messy_pair = queues[i]->get_ith(messy_student->get_position());
                         other_pair_position = rand() % queues[other_queue]->get_size();
-                        queues[i]->get_ith(messy_student->get_position())->swap(queues[other_queue]->get_ith(other_pair_position), messy_student->is_male());
+                        other_pair = queues[other_queue]->get_ith(other_pair_position);
+                        messy_pair->swap(other_pair, messy_student->is_male());
+                        queues[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(2);
+                        queues[i]->print(tquiet, tmessy);
+                        queues[other_queue]->print(tquiet, tmessy);
                     }
                 }
                 delete list;
@@ -413,29 +428,33 @@ int main(int argc, char* argv[]) {
         cerr << "Quiet threshold (third argument) should be lower than messy threshold (fourth argument)" << endl;
         return 2;
     }
-    int student_num = 21*k;
-    Student* students[k][21];
+    if (k < 2) {
+        cerr << "THere must be at least two classes (first argument)" << endl;
+        return 3;
+    }
+    int student_num = 5*k;
+    Student* students[k][5];
     for (int i = 0 ; i < k ; i++) {
         if (i % 2) {
-            for (int j = 0 ; j < 10 ; j++) {
+            for (int j = 0 ; j < 2 ; j++) {
                 students[i][j] = new Student(male_names[rand() % 18], i, true);
             }
-            for (int j = 10 ; j < 21 ; j++) {
+            for (int j = 2 ; j < 5 ; j++) {
                 students[i][j] = new Student(female_names[rand() % 18], i, false);
             }
         }
         else {
-            for (int j = 0 ; j < 11 ; j++) {
+            for (int j = 0 ; j < 5 ; j++) {
                 students[i][j] = new Student(male_names[rand() % 18], i, true);
             }
-            for (int j = 11 ; j < 21 ; j++) {
+            for (int j = 3 ; j < 5 ; j++) {
                 students[i][j] = new Student(female_names[rand() % 18], i, false);
             }
         }
     }
     Queue* queues[k];
     for (int i = 0 ; i < k ; i++) {
-        queues[i] = new Queue(students[i], 21);
+        queues[i] = new Queue(students[i], 5);
     }
     School school(queues, k, tquiet, tmessy);
     school.print();
@@ -446,7 +465,7 @@ int main(int argc, char* argv[]) {
     }
     school.print();
     for (int i = 0 ; i < k ; i++) {
-        for (int j = 0 ; j < 21 ; j++) {
+        for (int j = 0 ; j < 5 ; j++) {
             delete students[i][j];
         }
     }
