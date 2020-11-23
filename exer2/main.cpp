@@ -154,12 +154,12 @@ class Pair {
         }
 };
 
-class Queue {
+class Sequence {
     int messiness;
     int size;
     Pair** pairs;
     public:
-        Queue(Student** students, int student_amount)
+        Sequence(Student** students, int student_amount)
         :   messiness(0), size((student_amount + 1)/2) {
             int i, male_amount = 0;
             for (i = 0 ; i < student_amount ; i++) {
@@ -200,7 +200,7 @@ class Queue {
                 }
             }
         }
-        ~Queue() {
+        ~Sequence() {
             for (int i = 0 ; i < size ; i++) {
                 delete pairs[i];
             }
@@ -270,18 +270,18 @@ class Queue {
 };
 
 class School {
-    Queue** queues;
+    Sequence** sequences;
     int size;
     int tquiet, tmessy;
     public:
-        School(Queue** init_queues, int queue_amount, int init_tquiet, int init_messy)
-        :   queues(init_queues), tquiet(init_tquiet), tmessy(init_messy), size(queue_amount) {
+        School(Sequence** init_sequences, int sequence_amount, int init_tquiet, int init_messy)
+        :   sequences(init_sequences), tquiet(init_tquiet), tmessy(init_messy), size(sequence_amount) {
             int extra_males = 0, extra_females = 0;
-            for (int i = 0 ; i < queue_amount ; i++) {
-                if (queues[i]->excess_male()) {
+            for (int i = 0 ; i < sequence_amount ; i++) {
+                if (sequences[i]->excess_male()) {
                     extra_males++;
                 }
-                else if (queues[i]->excess_female()) {
+                else if (sequences[i]->excess_female()) {
                     extra_females++;
                 }
             }
@@ -289,19 +289,19 @@ class School {
             if (extra_pair_amount != 0) {
                 Pair* extra_pairs[extra_pair_amount];
                 Pair *male, *female;
-                bool male_first = !queues[0]->get_last_full_pair()->male_first();
+                bool male_first = !sequences[0]->get_last_full_pair()->male_first();
                 int j = 0, k = 0;
                 for (int i = 0 ; i < extra_pair_amount ; i++, male_first = !male_first) {
-                    for ( ; j < queue_amount ; j++) {
-                        if (queues[j]->excess_male()) {
-                            male = queues[j]->trim();
+                    for ( ; j < sequence_amount ; j++) {
+                        if (sequences[j]->excess_male()) {
+                            male = sequences[j]->trim();
                             j++;
                             break;
                         }
                     }
-                    for ( ; k < queue_amount ; k++) {
-                        if (queues[k]->excess_female()) {
-                            female = queues[k]->trim();
+                    for ( ; k < sequence_amount ; k++) {
+                        if (sequences[k]->excess_female()) {
+                            female = sequences[k]->trim();
                             k++;
                             break;
                         }
@@ -313,7 +313,7 @@ class School {
                         extra_pairs[i] = female->merge(male);
                     }
                 }
-                queues[0]->append(extra_pairs, extra_pair_amount);
+                sequences[0]->append(extra_pairs, extra_pair_amount);
             }
         }
         void mess() {
@@ -323,13 +323,13 @@ class School {
                 list = new StudentList;
                 int continuous_messy = 0;
                 bool enough_continuous = false;
-                for (int j = 0 ; j < queues[i]->get_size() ; j++) {
+                for (int j = 0 ; j < sequences[i]->get_size() ; j++) {
                     if (!(rand() % messiness_chance)) {
                         continuous_messy++;
-                        if (queues[i]->get_ith(j)->only_male()) {
+                        if (sequences[i]->get_ith(j)->only_male()) {
                             list->pushFront(j, true);
                         }
-                        else if (queues[i]->get_ith(j)->only_female()) {
+                        else if (sequences[i]->get_ith(j)->only_female()) {
                             list->pushFront(j, false);
                         }
                         else {
@@ -352,43 +352,43 @@ class School {
                     messy_student = messy_student->get_next())
                     {
                         while (true) {
-                            other_pair_position = rand() % queues[i]->get_size();
+                            other_pair_position = rand() % sequences[i]->get_size();
                             if (other_pair_position != messy_student->get_position()) {
                                 break;
                             }
                         }
-                        messy_pair = queues[i]->get_ith(messy_student->get_position());
-                        other_pair = queues[i]->get_ith(other_pair_position);
+                        messy_pair = sequences[i]->get_ith(messy_student->get_position());
+                        other_pair = sequences[i]->get_ith(other_pair_position);
                         cout << "Student being moved: " << endl;
-                        queues[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(1);
+                        sequences[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(1);
                         messy_pair->swap(other_pair, messy_student->is_male());
                         cout << "Sequence " << i + 1 << ":" << endl;
-                        queues[i]->print(tquiet, tmessy);
+                        sequences[i]->print(tquiet, tmessy);
                     }
                 }
                 else if (!enough_continuous) {
                     int other_pair_position;
-                    int other_queue = (i < (size - 1)) ? i + 1 : 0;
+                    int other_sequence = (i < (size - 1)) ? i + 1 : 0;
                     Pair *messy_pair, *other_pair;
                     for
                     (StudentListNode* messy_student = list->get_first() ;
                     messy_student != NULL ;
                     messy_student = messy_student->get_next())
                     {
-                        messy_pair = queues[i]->get_ith(messy_student->get_position());
-                        other_pair_position = rand() % queues[other_queue]->get_size();
-                        other_pair = queues[other_queue]->get_ith(other_pair_position);
-                        queues[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(2);
+                        messy_pair = sequences[i]->get_ith(messy_student->get_position());
+                        other_pair_position = rand() % sequences[other_sequence]->get_size();
+                        other_pair = sequences[other_sequence]->get_ith(other_pair_position);
+                        sequences[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(2);
                         messy_pair->swap(other_pair, messy_student->is_male());
                         cout << "Sequence " << i + 1 << ":" << endl;
-                        queues[i]->print(tquiet, tmessy);
-                        cout << "Sequence " << other_queue + 1 << ":" << endl;
-                        queues[other_queue]->print(tquiet, tmessy);
+                        sequences[i]->print(tquiet, tmessy);
+                        cout << "Sequence " << other_sequence + 1 << ":" << endl;
+                        sequences[other_sequence]->print(tquiet, tmessy);
                     }
                 }
                 else {
                     int other_pair_position;
-                    int other_queue;
+                    int other_sequence;
                     Pair *messy_pair, *other_pair;
                     for
                     (StudentListNode* messy_student = list->get_first() ;
@@ -396,20 +396,20 @@ class School {
                     messy_student = messy_student->get_next())
                     {
                         while (true) {
-                            other_queue = rand() % size;
-                            if (other_queue != i) {
+                            other_sequence = rand() % size;
+                            if (other_sequence != i) {
                                 break;
                             }
                         }
-                        messy_pair = queues[i]->get_ith(messy_student->get_position());
-                        other_pair_position = rand() % queues[other_queue]->get_size();
-                        other_pair = queues[other_queue]->get_ith(other_pair_position);
-                        queues[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(2);
+                        messy_pair = sequences[i]->get_ith(messy_student->get_position());
+                        other_pair_position = rand() % sequences[other_sequence]->get_size();
+                        other_pair = sequences[other_sequence]->get_ith(other_pair_position);
+                        sequences[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(2);
                         messy_pair->swap(other_pair, messy_student->is_male());
                         cout << "Sequence " << i + 1 << ":" << endl;
-                        queues[i]->print(tquiet, tmessy);
-                        cout << "Sequence " << other_queue + 1 << ":" << endl;
-                        queues[other_queue]->print(tquiet, tmessy);
+                        sequences[i]->print(tquiet, tmessy);
+                        cout << "Sequence " << other_sequence + 1 << ":" << endl;
+                        sequences[other_sequence]->print(tquiet, tmessy);
                     }
                 }
                 delete list;
@@ -418,7 +418,7 @@ class School {
         void print() const {
             for (int i = 0 ; i < size ; i++) {
                 cout << "Sequence " << i + 1 << ":" << endl;
-                queues[i]->print(tquiet, tmessy);
+                sequences[i]->print(tquiet, tmessy);
             }
         }
 };
@@ -457,11 +457,11 @@ int main(int argc, char* argv[]) {
             }
         }
     }
-    Queue* queues[k];
+    Sequence* sequences[k];
     for (int i = 0 ; i < k ; i++) {
-        queues[i] = new Queue(students[i], 21);
+        sequences[i] = new Sequence(students[i], 21);
     }
-    School school(queues, k, tquiet, tmessy);
+    School school(sequences, k, tquiet, tmessy);
     school.print();
     srand(time(NULL));
     for (int i = 0 ; i < l ; i++) {
@@ -474,7 +474,7 @@ int main(int argc, char* argv[]) {
         }
     }
     for (int i = 0 ; i < k ; i++) {
-        delete queues[i];
+        delete sequences[i];
     }
     return 0;
 }
