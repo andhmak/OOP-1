@@ -359,7 +359,7 @@ class School {
                         }
                         messy_pair = sequences[i]->get_ith(messy_student->get_position());
                         other_pair = sequences[i]->get_ith(other_pair_position);
-                        cout << "Student being moved: " << endl;
+                        cout << "Student being moved:" << endl;
                         sequences[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(1);
                         messy_pair->swap(other_pair, messy_student->is_male());
                         cout << "Sequence " << i + 1 << ":" << endl;
