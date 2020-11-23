@@ -3,8 +3,55 @@
 #include <ctime>
 #include <cstdlib>
 #include "names.h"
-
+////non existent messy students because they could be null
 using namespace std;
+
+class StudentListNode {
+    int position;
+    bool male;
+    StudentListNode* next;
+    public:
+        StudentListNode(int init_position, bool init_male)
+        :   position(init_position), male(init_male) { }
+        void set_next(StudentListNode* to_be_next) {
+            next = to_be_next;
+        }
+        StudentListNode* get_next() const {
+            return next;
+        }
+        int get_position() const {
+            return position;
+        }
+        bool is_male() const {
+            return male;
+        }
+};
+
+class StudentList {
+    StudentListNode* first;
+    int size;
+    public:
+        StudentList() : first(NULL), size(0) { }
+        ~StudentList() {
+            StudentListNode *curr_node, *next_node;
+            for (curr_node = first ; curr_node != NULL ; curr_node = next_node) {
+                next_node = curr_node->get_next();
+                delete curr_node;
+            }
+        }
+        void pushFront(int position, bool male) {
+            StudentListNode* new_node = new StudentListNode(position, male);
+            new_node->set_next(first);
+            first = new_node;
+            size++;
+        }
+        StudentListNode* get_first() const {
+            return first;
+        }
+        int get_size() const {
+            return size;
+        }
+};
 
 class Student {
     string name;
@@ -50,6 +97,38 @@ class Pair {
             }
             delete other;
             return this;
+        }
+        void swap(Pair* other, bool male) {
+            cout << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<" << endl;
+            Student *temp, *first_to_swap, *second_to_swap;
+            if (((this->first != NULL) && (this->first->is_male() == male)) || ((this->first == NULL) && (this->second->is_male() != male))) {
+                first_to_swap = this->first;
+            }
+            else {
+                first_to_swap = this->second;
+            }
+            if (((other->first != NULL) && (other->first->is_male() == male)) || ((other->first == NULL) && (other->second->is_male() != male))) {
+                second_to_swap = other->first;
+            }
+            else {
+                second_to_swap = other->second;
+            }
+            first_to_swap->print();
+            temp = first_to_swap;
+            first_to_swap = second_to_swap;
+            second_to_swap = temp;
+            cout << ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" << endl;
+        }
+        Student* get_student(bool male) const {
+            if ((first != NULL) && (first->is_male() == male)) {
+                return first;
+            }
+            else if ((second != NULL) && (second->is_male() == male)) {
+                return second;
+            }
+            else {
+                return NULL;
+            }
         }
         bool male_first() const {
             return first->is_male();
@@ -175,6 +254,12 @@ class Queue {
         Pair* get_last_full_pair() const {
             return (pairs[size - 1]->only_female() || pairs[size - 1]->only_male()) ? pairs[size - 2] : pairs[size - 1];
         }
+        int get_size() const {
+            return size;
+        }
+        Pair* get_ith(int i) const {
+            return pairs[i];
+        }
         void print(int tquiet, int tmessy) const {
             for (int i = 0 ; i < size ; i++) {
                 pairs[i]->print(i);
@@ -230,8 +315,86 @@ class School {
                 queues[0]->append(extra_pairs, extra_pair_ammount);
             }
         }
-        void mess(int ammount) {
-            
+        void mess() {
+            const int messiness_chance = 5;
+            StudentList* list;
+            for (int i = 0 ; i < size ; i++) {
+                cout << i << endl;
+                list = new StudentList;
+                int continuous_messy = 0;
+                bool enough_continuous = false;
+                for (int j = 0 ; j < queues[i]->get_size() ; j++) {
+                    cout << "   " << j << endl;
+                    if (!(rand() % messiness_chance)) {
+                        continuous_messy++;
+                        if (queues[i]->get_ith(j)->only_male()) {
+                            list->pushFront(j, true);
+                        }
+                        else if (queues[i]->get_ith(j)->only_female()) {
+                            list->pushFront(j, false);
+                        }
+                        else {
+                            list->pushFront(j, rand() % 2);
+                        }
+                    }
+                    else {
+                        continuous_messy = 0;
+                    }
+                    if (continuous_messy == 3) {
+                        enough_continuous = true;
+                    }
+                }
+                if (list->get_size() <= 2) {
+                    cout << "case 1" << endl;
+                    int other_pair_position;
+                    for
+                    (StudentListNode* messy_student = list->get_first() ;
+                    messy_student != NULL ;
+                    messy_student = messy_student->get_next())
+                    {
+                        while (true) {
+                            other_pair_position = rand() % queues[i]->get_size();
+                            if (other_pair_position != messy_student->get_position()) {
+                                break;
+                            }
+                        }
+                        queues[i]->get_ith(messy_student->get_position())->swap(queues[i]->get_ith(other_pair_position), messy_student->is_male());
+                    }
+                }
+                else if (!enough_continuous) {
+                    cout << "case 2" << endl;
+                    int other_pair_position;
+                    int other_queue = (i < (size - 1)) ? i + 1 : 0;
+                    for
+                    (StudentListNode* messy_student = list->get_first() ;
+                    messy_student != NULL ;
+                    messy_student = messy_student->get_next())
+                    {
+                        other_pair_position = rand() % queues[other_queue]->get_size();
+                        queues[i]->get_ith(messy_student->get_position())->swap(queues[other_queue]->get_ith(other_pair_position), messy_student->is_male());
+                    }
+                }
+                else {
+                    cout << "case 1" << endl;
+                    int other_pair_position;
+                    int other_queue;
+                    for
+                    (StudentListNode* messy_student = list->get_first() ;
+                    messy_student != NULL ;
+                    messy_student = messy_student->get_next())
+                    {
+                        while (true) {
+                            other_queue = rand() % size;
+                            if (other_queue != i) {
+                                break;
+                            }
+                        }
+                        other_pair_position = rand() % queues[other_queue]->get_size();
+                        queues[i]->get_ith(messy_student->get_position())->swap(queues[other_queue]->get_ith(other_pair_position), messy_student->is_male());
+                    }
+                }
+                delete list;
+            }
         }
         void print() const {
             for (int i = 0 ; i < size ; i++) {
@@ -276,9 +439,10 @@ int main(int argc, char* argv[]) {
     }
     School school(queues, k, tquiet, tmessy);
     school.print();
+    cout << "---------------------------------------------------------------" << endl;
     srand(time(NULL));
     for (int i = 0 ; i < l ; i++) {
-        school.mess(rand() % (student_num/10));
+        school.mess();
     }
     school.print();
     for (int i = 0 ; i < k ; i++) {
@@ -290,4 +454,4 @@ int main(int argc, char* argv[]) {
         delete queues[i];
     }
     return 0;
-} 
+}

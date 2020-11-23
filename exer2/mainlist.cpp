@@ -6,6 +6,42 @@
 
 using namespace std;
 
+class StudentListNode {
+    Student& student;
+    StudentListNode* next;
+    public:
+        StudentListNode(const Student& init_student)
+        :   student(init_student), male(init_male) { }
+        void set_next(StudentListNode* to_be_next) {
+            next = to_be_next;
+        }
+        StudentListNode* get_next() const {
+            return next;
+        }
+        int get_position() const {
+            return position;
+        }
+        bool is_male() const {
+            return male;
+        }
+};
+
+class StudentList {
+    StudentListNode* first;
+    int size;
+    public:
+        StudentList() : first(NULL), size(0) { }
+        void pushFront(int position, bool male) {
+            StudentListNode* new_node = new StudentListNode(position, male);
+            new_node->set_next(first);
+            first = new_node;
+            size++;
+        }
+        int get_size() const {
+            return size;
+        }
+};
+
 class Student {
     string name;
     int classroom_id;
@@ -26,7 +62,6 @@ class Student {
 class Pair {
     Student* first;
     Student* second;
-    Pair* next;
     public:
         Pair(Student* init_first, Student* init_second) {
             first = init_first;
@@ -61,15 +96,6 @@ class Pair {
         bool only_female() const {
             return ((first == NULL) && ((second != NULL) && !second->is_male())) || (((first != NULL) && !first->is_male()) && (second == NULL));
         }
-        bool is_full() const {
-            return (first != NULL) && (second != NULL);
-        }
-        void set_next(Pair* next_pair) {
-            next = next_pair;
-        }
-        Pair* get_next() const {
-            return next;
-        }
         void print(int position) const {
             cout << "Position " << position + 1 << ":" << endl;
             if (first != NULL) {
@@ -89,11 +115,12 @@ class Pair {
 
 class Queue {
     int messiness;
-    Pair *first_pair, *last_full;
+    int size;
+    Pair** pairs;
     public:
         Queue(Student** students, int student_ammount)
-        :   messiness(0) {
-            int i, male_ammount = 0, size = (student_ammount + 1)/2;
+        :   messiness(0), size((student_ammount + 1)/2) {
+            int i, male_ammount = 0;
             for (i = 0 ; i < student_ammount ; i++) {
                 if (students[i]->is_male()) {
                     male_ammount++;
@@ -103,9 +130,9 @@ class Queue {
                 cout << "Throw exception" << endl;
                 exit(-1);
             }
-            Student *first, *second, *temp;
+            pairs = new Pair*[size];
+            Student *first, *second;
             bool is_male = true;
-            Pair *prev_pair, *curr_pair;
             int j = 0, k = 0;
             for (i = 0 ; i < size ; i++) {
                 first = NULL;
@@ -125,42 +152,48 @@ class Queue {
                     }
                 }
                 if (i % 2) {
-                    temp = first;
-                    first = second;
-                    second = temp;
-                }
-                if (i == 0) {
-                    first_pair = new Pair(first, second);
-                    prev_pair = first_pair;
+                    pairs[i] = new Pair(first, second);
                 }
                 else {
-                    curr_pair = new Pair(first, second);
-                    prev_pair->set_next(curr_pair);
-                    curr_pair = prev_pair;
-                }
-                if (i >= size - 2) {
-                    if (prev_pair->is_full()) {
-                        last_full = prev_pair;
-                    }
+                    pairs[i] = new Pair(second, first);
                 }
             }
         }
         ~Queue() {
-            Pair *next_pair, *prev_pair;
-            for (prev_pair = first_pair, next_pair = first_pair->get_next() ; prev_pair != NULL ; prev_pair = next_pair, next_pair = next_pair->get_next()) {
-                delete prev_pair;
+            for (int i = 0 ; i < size ; i++) {
+                delete pairs[i];
             }
+            delete[] pairs;
         }
         Pair* trim() {
-            Pair* to_return = last_full->get_next();
-            last_full->set_next(NULL);
-            return to_return;
+            Pair** new_pairs = new Pair*[size - 1];
+            for (int i = 0 ; i < size - 1 ; i++) {
+                new_pairs[i] = pairs[i];
+            }
+            Pair* excess = pairs[size - 1];
+            delete[] pairs;
+            pairs = new_pairs;
+            size--;
+            return excess;
         }
-        void append(Pair* extra_pairs) {
-            last_full->set_next(extra_pairs);
+        Pair* trim_time_efficient() {
+            size--;
+            return pairs[size];
+        }
+        void append(Pair** extra_pairs, int extra_ammount) {
+            Pair** new_pairs = new Pair*[size + extra_ammount];
+            for (int i = 0 ; i < size ; i++) {
+                new_pairs[i] = pairs[i];
+            }
+            for (int i = 0 ; i < extra_ammount ; i++) {
+                new_pairs[i + size] = extra_pairs[i];
+            }
+            delete[] pairs;
+            pairs = new_pairs;
+            size += extra_ammount;
         }
         bool excess_male() const {
-            if ((last_full->get_next() != NULL) && last_full->get_next()->only_male()) {
+            if (pairs[size - 1]->only_male()) {
                 return true;
             }
             else {
@@ -168,7 +201,7 @@ class Queue {
             }
         }
         bool excess_female() const {
-            if ((last_full->get_next() != NULL) && last_full->get_next()->only_female()) {
+            if (pairs[size - 1]->only_female()) {
                 return true;
             }
             else {
@@ -176,13 +209,14 @@ class Queue {
             }
         }
         Pair* get_last_full_pair() const {
-            return last_full;
+            return (pairs[size - 1]->only_female() || pairs[size - 1]->only_male()) ? pairs[size - 2] : pairs[size - 1];
+        }
+        int get_size() const {
+            return size;
         }
         void print(int tquiet, int tmessy) const {
-            Pair *next_pair, *prev_pair;
-            int i = 0;
-            for (prev_pair = first_pair, next_pair = first_pair->get_next() ; prev_pair != NULL ; prev_pair = next_pair, next_pair = next_pair->get_next(), i++) {
-                prev_pair->print(i);
+            for (int i = 0 ; i < size ; i++) {
+                pairs[i]->print(i);
             }
             cout << ((messiness < tquiet) ? "What a quiet class!" : ((messiness <= tmessy) ? "Please, be quiet!" : "What a mess!")) << endl;
         }
@@ -206,7 +240,7 @@ class School {
             }
             int extra_pair_ammount = (extra_males < extra_females) ? extra_males : extra_females;
             if (extra_pair_ammount != 0) {
-                Pair *extra_pairs_first, *extra_pairs_prev, *extra_pairs_next;
+                Pair* extra_pairs[extra_pair_ammount];
                 Pair *male, *female;
                 bool male_first = !queues[0]->get_last_full_pair()->male_first();
                 int j = 0, k = 0;
@@ -225,27 +259,23 @@ class School {
                             break;
                         }
                     }
-                    if (i == 0) {
-                        if (male_first) {
-                            extra_pairs_first = male->merge(female);
-                        }
-                        else {
-                            extra_pairs_first = female->merge(male);
-                        }
-                        extra_pairs_prev = extra_pairs_first;
+                    if (male_first) {
+                        extra_pairs[i] = male->merge(female);
                     }
                     else {
-                        if (male_first) {
-                            extra_pairs_next = male->merge(female);
-                        }
-                        else {
-                            extra_pairs_next = female->merge(male);
-                        }
-                        extra_pairs_prev->set_next(extra_pairs_next);
-                        extra_pairs_prev = extra_pairs_next;
+                        extra_pairs[i] = female->merge(male);
                     }
                 }
-                queues[0]->append(extra_pairs_first);
+                queues[0]->append(extra_pairs, extra_pair_ammount);
+            }
+        }
+        void mess() {
+            int messy_student_ammount;
+            for (int i = 0 ; i < size ; i++) {
+                messy_student_ammount = rand() % queues[i]->get_size();
+                for (int j = 0 ; j < queues[i]->get_size() ; j++) {
+
+                }
             }
         }
         void print() const {
@@ -292,12 +322,9 @@ int main(int argc, char* argv[]) {
     School school(queues, k, tquiet, tmessy);
     school.print();
     srand(time(NULL));
-/*    int messy_number;
-
     for (int i = 0 ; i < l ; i++) {
-        messy_number = rand() % (student_num/5);
-        school.mess
-    }*/
+        school.mess();
+    }
     school.print();
     for (int i = 0 ; i < k ; i++) {
         for (int j = 0 ; j < 21 ; j++) {
