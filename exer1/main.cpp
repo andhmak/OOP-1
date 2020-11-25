@@ -1,3 +1,5 @@
+/* File: main.cpp */
+
 #include <iostream>
 #include <ctime>
 #include <cstdlib>
@@ -6,6 +8,7 @@
 
 using namespace std;
 
+// Συνάρτηση τυχαίας αναδιάταξης μονοδιάστατου πίνακα
 void shuffle(Student* array[], int size) {
     int new_pos;
     Student* temp;

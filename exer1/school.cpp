@@ -1,3 +1,5 @@
+/* File: school.cpp */
+
 #include <iostream>
 #include "school.h"
 
@@ -124,6 +126,40 @@ void Stairs::print() const {
     }
 }
 
+Corridor::Corridor(int init_capacity) : capacity(init_capacity) {
+    students = new Student*[init_capacity];
+    student_num = 0;
+    cout << "A New Corridor has been created!" << endl;
+}
+
+Corridor::~Corridor() {
+    cout << "A Corridor to be destroyed!" << endl;
+    delete[] students;
+}
+
+void Corridor::enter(Student& student) {
+    cout << student.get_name() << " enters corridor!" << endl;
+    students[student_num] = &student;
+    student_num++;
+    student.set_position(at_corridor);
+}
+
+Student* Corridor::exit() {
+    if (student_num == 0) {
+        return NULL;
+    }
+    cout << students[student_num - 1]->get_name() << " exits corridor!" << endl;
+    student_num--;
+    return students[student_num];
+}
+
+void Corridor::print() const {
+    cout << "People in corridor are: " << endl;
+    for (int i = 0 ; i < student_num ; i++) {
+        students[i]->print();
+    }
+}
+
 Class::Class(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
@@ -156,39 +192,6 @@ void Class::print(int class_number) const {
 void Class::place(Teacher& teacher_in) {
     teacher = &teacher_in;
     teacher_in.set_in();
-}
-
-Corridor::Corridor(int init_capacity) : capacity(init_capacity) {
-    students = new Student*[init_capacity];
-    student_num = 0;
-    cout << "A New Corridor has been created!" << endl;
-}
-Corridor::~Corridor() {
-    cout << "A Corridor to be destroyed!" << endl;
-    delete[] students;
-}
-
-void Corridor::enter(Student& student) {
-    cout << student.get_name() << " enters corridor!" << endl;
-    students[student_num] = &student;
-    student_num++;
-    student.set_position(at_corridor);
-}
-
-Student* Corridor::exit() {
-    if (student_num == 0) {
-        return NULL;
-    }
-    cout << students[student_num - 1]->get_name() << " exits corridor!" << endl;
-    student_num--;
-    return students[student_num];
-}
-
-void Corridor::print() const {
-    cout << "People in corridor are: " << endl;
-    for (int i = 0 ; i < student_num ; i++) {
-        students[i]->print();
-    }
 }
 
 Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {

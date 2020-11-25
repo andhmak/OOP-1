@@ -3,7 +3,7 @@
 #include <ctime>
 #include <cstdlib>
 #include "names.h"
-////non existent messy students because they could be null
+////say empty spaces can be moved
 using namespace std;
 
 class StudentListNode {
@@ -333,7 +333,13 @@ class School {
                             list->pushFront(j, false);
                         }
                         else {
-                            list->pushFront(j, rand() % 2);
+                            if (rand() % 2) {
+                                list->pushFront(j, true);
+                                list->pushFront(j, false);
+                            }
+                            else {
+                                list->pushFront(j, rand() % 2);
+                            }
                         }
                     }
                     else {
@@ -350,6 +356,14 @@ class School {
                     (StudentListNode* messy_student = list->get_first() ;
                     messy_student != NULL ;
                     messy_student = messy_student->get_next())
+                    {   
+                        messy_pair = sequences[i]->get_ith(messy_student->get_position());
+                        sequences[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(1);
+                    }
+                    for
+                    (StudentListNode* messy_student = list->get_first() ;
+                    messy_student != NULL ;
+                    messy_student = messy_student->get_next())
                     {
                         while (true) {
                             other_pair_position = rand() % sequences[i]->get_size();
@@ -360,7 +374,6 @@ class School {
                         messy_pair = sequences[i]->get_ith(messy_student->get_position());
                         other_pair = sequences[i]->get_ith(other_pair_position);
                         cout << "Student being moved:" << endl;
-                        sequences[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(1);
                         messy_pair->swap(other_pair, messy_student->is_male());
                         cout << "Sequence " << i + 1 << ":" << endl;
                         sequences[i]->print(tquiet, tmessy);
@@ -434,7 +447,7 @@ int main(int argc, char* argv[]) {
         return 2;
     }
     if (k < 2) {
-        cerr << "THere must be at least two classes (first argument)" << endl;
+        cerr << "There must be at least two classes (first argument)" << endl;
         return 3;
     }
     int student_num = 21*k;
