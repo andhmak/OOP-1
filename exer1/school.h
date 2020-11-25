@@ -8,31 +8,31 @@ enum area {
 // Κλάση που αναπαριστά έναν μαθητή
 class Student {
     std::string name;       // όνομα του μαθητή
-    int floor_num;          // αριθμός οροόφου όπου βρίσκεται η τάξη/προορισμός του
-    int class_num;          // αριθμός/θέση της τάξης/προορισμού του στον όροφο
+    short floor_num;        // αριθμός οροόφου όπου βρίσκεται η τάξη/προορισμός του
+    short class_num;        // αριθμός/θέση της τάξης/προορισμού του στον όροφο
     enum area position;     // χώρος στον οποίο βρίσκεται μια συγκεκριμένη στιγμή
     public:
-        Student(const char* init_name, int init_floor_num, int init_class_num); // Constructor
-        ~Student();                                                             // Destructor (εκτυπώνει και τα δεδομένα του μαθητή)
-        void set_position(enum area new_position) { position = new_position; }  // Mutator
-        std::string get_name() const { return name; }                           // |
-        int get_floor_num() const { return floor_num; }                         // | --> Accessors
-        int get_class_num() const { return class_num; }                         // |
-        void print() const { std::cout << name << std::endl; }                  // Συνάρτηση εκτύπωσης (εκτυπώνει το όνομα)
+        Student(const char* init_name, short init_floor_num, short init_class_num); // Constructor
+        ~Student();                                                                 // Destructor (εκτυπώνει και τα δεδομένα του μαθητή)
+        void set_position(enum area new_position) { position = new_position; }      // Mutator
+        std::string get_name() const { return name; }                               // |
+        short get_floor_num() const { return floor_num; }                           // | --> Accessors
+        short get_class_num() const { return class_num; }                           // |
+        void print() const { std::cout << name << std::endl; }                      // Συνάρτηση εκτύπωσης (εκτυπώνει το όνομα)
 };
 
 // Κλάση που αναπαριστά έναν δάσκαλο
 class Teacher {
     std::string name;   // όνομα του δασκάλου
-    int floor_num;      // αριθμός οροόφου όπου βρίσκεται η τάξη/προορισμός του
-    int class_num;      // αριθμός/θέση της τάξης/προορισμού του στον όροφο
+    short floor_num;    // αριθμός οροόφου όπου βρίσκεται η τάξη/προορισμός του
+    short class_num;    // αριθμός/θέση της τάξης/προορισμού του στον όροφο
     bool in;            // αν βρίσκεται μέσα στην τάξη ή όχι
     public:
-        Teacher(const char* init_name, int init_floor_num, int init_class_num);         // Constructor
+        Teacher(const char* init_name, short init_floor_num, short init_class_num);     // Constructor
         ~Teacher();                                                                     // Destructor (εκτυπώνει και τα δεδομένα του δασκάλου)
         void set_in() { in = true; }                                                    // Mutator
-        int get_floor_num() const { return floor_num; }                                 // |
-        int get_class_num() const { return class_num; }                                 // | --> Accessors
+        short get_floor_num() const { return floor_num; }                               // |
+        short get_class_num() const { return class_num; }                               // | --> Accessors
         bool is_in() const { return in; }                                               // |
         void print() const { std::cout << "The teacher is: " << name << std::endl; }    // Συνάρτηση εκτύπωσης (εκτυπώνει το όνομα)
 };
@@ -61,7 +61,7 @@ class Stairs {
         ~Stairs();                  // Destructor
         bool full() const { return capacity == student_num; }   // Επιστρέφει το αν είναι γεμάτο το κλιμακοστάσιο
         void enter(Student& student);   // Βάζει τον μαθητή/όρισμα στο κλιμακοστάσιο
-        Student* exit(int floor_num);   // Αφαιρεί τον τελευταίο μαθητή του οποίου η τάξη βρίσκεται στον
+        Student* exit(short floor_num); // Αφαιρεί τον τελευταίο μαθητή του οποίου η τάξη βρίσκεται στον
                                         // όροφο/όρισμα από το κλιμακοστάσιο και επιστρέφει δείκτη σε αυτόν
         void print() const;             // Συνάρτηση εκτύπωσης (εκτυπώνει τους μαθητές που βρίσκονται στο κλιμακοστάσιο)
 };
@@ -87,13 +87,13 @@ class Class {
     Teacher* teacher;   // ο δάσκαλος που βρίσκεται στην τάξη (δείκτης στο αντικείμενο του δασκάλου, αν δεν έχει φτάσει NULL)
     int student_num;    // πλήθος μαθητών που βρίσκονται στην τάξη
     public:
-        Class(int init_capacity);           // Constructor
-        ~Class();                           // Destructor
+        Class(int init_capacity);   // Constructor
+        ~Class();                   // Destructor
         bool full() const { return (capacity == student_num) || (teacher != NULL); }    // Επιστρέφει αν είναι κορεσμένη η τάξη, είτε
                                                                                         // λόγω της ύπαρξης πολλών μαθητών ή δασκάλου
-        void enter(Student& student);       // Βάζει τον μαθητή/όρισμα στην τάξη
-        void place(Teacher& teacher_in);    // Θέτει τον δάσκαλο/όρισμα ως τον δάσκαλο της τάξης, ενημερώνοντάς τον πως εισήλθε
-        void print(int class_number) const; // Συνάρτηση εκτύπωσης (εκτυπώνει τους μαθητές και τον δάσκαλο που βρίσκονται στην τάξη)
+        void enter(Student& student);           // Βάζει τον μαθητή/όρισμα στην τάξη
+        void place(Teacher& teacher_in);        // Θέτει τον δάσκαλο/όρισμα ως τον δάσκαλο της τάξης, ενημερώνοντάς τον πως εισήλθε
+        void print(short class_number) const;   // Συνάρτηση εκτύπωσης (εκτυπώνει τους μαθητές και τον δάσκαλο που βρίσκονται στην τάξη)
 };
 
 // Κλάση που αναπαριστά έναν όροφο
@@ -107,7 +107,7 @@ class Floor {
         void enter(Student& student);       // Βάζει τον μαθητή/όρισμα στον όροφο, βάζοντάς τον στον διάδρομο αν χωράει
         void place(Teacher& teacher) { classes[teacher.get_class_num()]->place(teacher); }  // Τοποθετεί τον δάσκαλο/όρισμα στον όροφό του,
                                                                                             // τοποθετώντας τον στην τάξη του
-        void print(int floor_number) const; // Συνάρτηση εκτύπωσης (εκτυπώνει τον διάδρομο και τις τάξεις του ορόφου)
+        void print(short floor_number) const;   // Συνάρτηση εκτύπωσης (εκτυπώνει τον διάδρομο και τις τάξεις του ορόφου)
 };
 
 // Κλάση που αναπαριστά ένα σχολείο

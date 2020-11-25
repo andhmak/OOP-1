@@ -27,6 +27,10 @@ int main(int argc, char* argv[]) {
     }
     srand(time(NULL));
     int cclass = atoi(argv[1]), cyard = atoi(argv[2]), cstair = atoi(argv[3]), ccorr = atoi(argv[4]);
+    if (cclass < 1 || cyard < 1 || cstair < 1 || ccorr < 1) {
+        cerr << "The capacities must be positive" << endl;
+        return 2;
+    }
     School school(cclass, cyard, cstair, ccorr);
     int student_num = cclass*18;
     Student* students[student_num];

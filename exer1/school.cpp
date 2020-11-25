@@ -6,7 +6,7 @@
 using namespace std;
 
 // Constructor της Student
-Student::Student(const char* init_name, int init_floor_num, int init_class_num)
+Student::Student(const char* init_name, short init_floor_num, short init_class_num)
 :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
 {
     position = outside;
@@ -39,7 +39,7 @@ Student::~Student() {
 }
 
 // Constructor της Teacher
-Teacher::Teacher(const char* init_name, int init_floor_num, int init_class_num)
+Teacher::Teacher(const char* init_name, short init_floor_num, short init_class_num)
 :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
 {
     in = false;
@@ -118,7 +118,7 @@ void Stairs::enter(Student& student) {
 
 // Αφαιρεί τον τελευταίο μαθητή του οποίου η τάξη βρίσκεται στον
 // όροφο/όρισμα από το κλιμακοστάσιο και επιστρέφει δείκτη σε αυτό
-Student* Stairs::exit(int floor_num) {
+Student* Stairs::exit(short floor_num) {
     Student* temp;
     for (int i = student_num - 1 ; i >= 0 ; i--) {
         if (students[i]->get_floor_num() == floor_num) {
@@ -209,7 +209,7 @@ void Class::place(Teacher& teacher_in) {
 }
 
 // Συνάρτηση εκτύπωσης της Class
-void Class::print(int class_number) const {
+void Class::print(short class_number) const {
     cout << "People in class " << class_number + 1 << " are: " << endl;
     for (int i = 0 ; i < student_num ; i++) {
         students[i]->print();
@@ -221,7 +221,7 @@ void Class::print(int class_number) const {
 
 // Constructor της Floor
 Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {
-    for (int i = 0 ; i < 6 ; i++) {
+    for (char i = 0 ; i < 6 ; i++) {
         classes[i] = new Class(cclass);
     }
     cout << "A New Floor has been created!" << endl;
@@ -230,7 +230,7 @@ Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {
 // Destructor της Floor
 Floor::~Floor() {
     cout << "A Floor to be destroyed!" << endl;
-    for (int i = 0 ; i < 6 ; i++) {
+    for (char i = 0 ; i < 6 ; i++) {
         delete classes[i];
     }
 }
@@ -246,10 +246,10 @@ void Floor::enter(Student& student) {
 }
 
 // Συνάρτηση εκτύπωσης της Floor
-void Floor::print(int floor_number) const {
+void Floor::print(short floor_number) const {
     cout << "Floor number " << floor_number + 1 << " contains: " << endl;
     corridor.print();
-    for (int i = 0 ; i < 6 ; i++) {
+    for (char i = 0 ; i < 6 ; i++) {
         classes[i]->print(i);
     }
 }
@@ -258,7 +258,7 @@ void Floor::print(int floor_number) const {
 School::School(int cclass, int cyard, int cstair, int ccorr)
 :   yard(cyard), stairs(cstair)
 {
-    for (int i = 0 ; i < 3 ; i++) {
+    for (char i = 0 ; i < 3 ; i++) {
         floors[i] = new Floor(cclass, ccorr);
     }
     cout << "A New School has been created!" << endl;
@@ -267,7 +267,7 @@ School::School(int cclass, int cyard, int cstair, int ccorr)
 // Destructor της School
 School::~School() {
     cout << "A School to be destroyed!" << endl;
-    for (int i = 0 ; i < 3 ; i++) {
+    for (char i = 0 ; i < 3 ; i++) {
         delete floors[i];
     }
 }
@@ -302,7 +302,7 @@ bool School::enter(Student** students, int size) {
     int ammount_in = 0;
     bool stagnated;
     Student* to_enter;
-    while(true) {
+    while (true) {
         stagnated = true;
         for ( ; (yard.full() == false) && (ammount_in != size) ; ammount_in++) {
             yard.enter(*students[ammount_in]);
@@ -336,7 +336,7 @@ void School::print() const {
     cout << "School life consists of: " << endl;
     yard.print();
     stairs.print();
-    for (int i = 0 ; i < 3 ; i++) {
+    for (char i = 0 ; i < 3 ; i++) {
         floors[i]->print(i);
     }
 }
