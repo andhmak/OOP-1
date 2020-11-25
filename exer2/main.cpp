@@ -6,65 +6,25 @@
 ////say empty spaces can be moved
 using namespace std;
 
-class StudentListNode {
-    int position;
-    bool male;
-    StudentListNode* next;
-    public:
-        StudentListNode(int init_position, bool init_male)
-        :   position(init_position), male(init_male) { }
-        void set_next(StudentListNode* to_be_next) {
-            next = to_be_next;
-        }
-        StudentListNode* get_next() const {
-            return next;
-        }
-        int get_position() const {
-            return position;
-        }
-        bool is_male() const {
-            return male;
-        }
-};
-
-class StudentList {
-    StudentListNode* first;
-    int size;
-    public:
-        StudentList() : first(NULL), size(0) { }
-        ~StudentList() {
-            StudentListNode *curr_node, *next_node;
-            for (curr_node = first ; curr_node != NULL ; curr_node = next_node) {
-                next_node = curr_node->get_next();
-                delete curr_node;
-            }
-        }
-        void pushFront(int position, bool male) {
-            StudentListNode* new_node = new StudentListNode(position, male);
-            new_node->set_next(first);
-            first = new_node;
-            size++;
-        }
-        StudentListNode* get_first() const {
-            return first;
-        }
-        int get_size() const {
-            return size;
-        }
-};
-
 class Student {
     string name;
     int classroom_id;
     bool male;
+    bool messy;
     public:
         Student(const char* init_name, int init_classroom_id, bool init_male)
-        :   name(init_name), classroom_id(init_classroom_id), male(init_male) { }
+        :   name(init_name), classroom_id(init_classroom_id), male(init_male), messy(0) { }
         bool is_male() const {
             return male;
         }
         int get_classroom_id() const {
             return classroom_id;
+        }
+        bool get_messy() const {
+            return messy;
+        }
+        void set_messy(bool to_be_messy) {
+            return messy = to_be_messy;
         }
         void print() const {
             cout << name << ", class " << classroom_id + 1 << (male ? ", male" : ", female") << endl;
@@ -318,27 +278,33 @@ class School {
         }
         void mess() {
             const int messiness_chance = 5;
-            StudentList* list;
+            int messy_amount[size];
             for (int i = 0 ; i < size ; i++) {
-                list = new StudentList;
+                messy_amount[i] = 0;
+            }
+            bool enough_continuous[size];
+            for (int i = 0 ; i < size ; i++) {
+                enough_continuous[i] = false;
+            }
+            for (int i = 0 ; i < size ; i++) {
                 int continuous_messy = 0;
-                bool enough_continuous = false;
                 for (int j = 0 ; j < sequences[i]->get_size() ; j++) {
                     if (!(rand() % messiness_chance)) {
                         continuous_messy++;
+                        messy_amount[i]++;
                         if (sequences[i]->get_ith(j)->only_male()) {
-                            list->pushFront(j, true);
+                            sequences[i]->get_ith(j)->get_student(true)->set_messy(true);
                         }
                         else if (sequences[i]->get_ith(j)->only_female()) {
-                            list->pushFront(j, false);
+                            sequences[i]->get_ith(j)->get_student(false)->set_messy(true);
                         }
                         else {
                             if (rand() % 2) {
-                                list->pushFront(j, true);
-                                list->pushFront(j, false);
+                                sequences[i]->get_ith(j)->get_student(true)->set_messy(true);
+                                sequences[i]->get_ith(j)->get_student(false)->set_messy(true);
                             }
                             else {
-                                list->pushFront(j, rand() % 2);
+                                sequences[i]->get_ith(j)->get_student(rand() % 2)->set_messy(true);
                             }
                         }
                     }
@@ -346,10 +312,12 @@ class School {
                         continuous_messy = 0;
                     }
                     if (continuous_messy == 3) {
-                        enough_continuous = true;
+                        enough_continuous[i] = true;
                     }
                 }
-                if (list->get_size() <= 2) {
+            }
+            for (int i = 0 ; i < size ; i++) {
+                if (messy_amount[i] <= 2) {
                     int other_pair_position;
                     Pair *messy_pair, *other_pair;
                     for
@@ -379,7 +347,7 @@ class School {
                         sequences[i]->print(tquiet, tmessy);
                     }
                 }
-                else if (!enough_continuous) {
+                else if (!enough_continuous[i]) {
                     int other_pair_position;
                     int other_sequence = (i < (size - 1)) ? i + 1 : 0;
                     Pair *messy_pair, *other_pair;
@@ -425,7 +393,6 @@ class School {
                         sequences[other_sequence]->print(tquiet, tmessy);
                     }
                 }
-                delete list;
             }
         }
         void print() const {
