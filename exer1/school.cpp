@@ -5,6 +5,7 @@
 
 using namespace std;
 
+// Constructor της Student
 Student::Student(const char* init_name, int init_floor_num, int init_class_num)
 :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
 {
@@ -14,6 +15,7 @@ Student::Student(const char* init_name, int init_floor_num, int init_class_num)
     cout << "Floor " << floor_num + 1 << ", class " << class_num + 1 << endl;
 }
 
+// Destructor της Student
 Student::~Student() {
     cout << "A Student to be destroyed!" << endl;
     cout << name << endl;
@@ -36,6 +38,7 @@ Student::~Student() {
     }
 }
 
+// Constructor της Teacher
 Teacher::Teacher(const char* init_name, int init_floor_num, int init_class_num)
 :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
 {
@@ -45,6 +48,7 @@ Teacher::Teacher(const char* init_name, int init_floor_num, int init_class_num)
     cout << "Floor " << floor_num + 1  << ", class " << class_num + 1 << endl;
 }
 
+// Destructor της Teacher
 Teacher::~Teacher() {
     cout << "A Teacher to be destroyed!" << endl;
     cout << name << endl;
@@ -52,17 +56,20 @@ Teacher::~Teacher() {
     cout << "Situated " << (in ? "in " : "outside ") << "the class" << endl;
 }
 
+// Constructor της Yard
 Yard::Yard(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
     cout << "A New Yard has been created!" << endl;
 }
 
+// Destructor της Yard
 Yard::~Yard() {
     cout << "A Yard to be destroyed!" << endl;
     delete[] students;
 }
 
+// Βάζει τον μαθητή/όρισμα στην αυλή
 void Yard::enter(Student& student) {
     cout << student.get_name() << " enters schoolyard!" << endl;
     students[student_num] = &student;
@@ -70,6 +77,7 @@ void Yard::enter(Student& student) {
     student.set_position(at_yard);
 }
 
+// Αφαιρεί τον τελευταίο μαθητή από την αυλή και επιστρέφει δείκτη σε αυτόν
 Student* Yard::exit() {
     if (student_num == 0) {
         return NULL;
@@ -79,6 +87,7 @@ Student* Yard::exit() {
     return students[student_num];
 }
 
+// Συνάρτηση εκτύπωσης της Yard
 void Yard::print() const {
     cout << "People in schoolyard are: " << endl;
     for (int i = 0 ; i < student_num ; i++) {
@@ -86,17 +95,20 @@ void Yard::print() const {
     }
 }
 
+// Constructor της Stairs
 Stairs::Stairs(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
     cout << "New Stairs have been created!" << endl;
 }
 
+// Destructor της Stairs
 Stairs::~Stairs() {
     cout << "Stairs to be destroyed!" << endl;
     delete[] students;
 }
 
+// Βάζει τον μαθητή/όρισμα στο κλιμακοστάσιο
 void Stairs::enter(Student& student) {
     cout << student.get_name() << " enters stairs!" << endl;
     students[student_num] = &student;
@@ -104,6 +116,8 @@ void Stairs::enter(Student& student) {
     student.set_position(at_stairs);
 }
 
+// Αφαιρεί τον τελευταίο μαθητή του οποίου η τάξη βρίσκεται στον
+// όροφο/όρισμα από το κλιμακοστάσιο και επιστρέφει δείκτη σε αυτό
 Student* Stairs::exit(int floor_num) {
     Student* temp;
     for (int i = student_num - 1 ; i >= 0 ; i--) {
@@ -119,6 +133,7 @@ Student* Stairs::exit(int floor_num) {
     return NULL;
 }
 
+// Συνάρτηση εκτύπωσης της Stairs
 void Stairs::print() const {
     cout << "People in stairs are: " << endl;
     for (int i = 0 ; i < student_num ; i++) {
@@ -126,17 +141,20 @@ void Stairs::print() const {
     }
 }
 
+// Constructor της Corridor
 Corridor::Corridor(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
     cout << "A New Corridor has been created!" << endl;
 }
 
+// Destructor της Corridor
 Corridor::~Corridor() {
     cout << "A Corridor to be destroyed!" << endl;
     delete[] students;
 }
 
+// Βάζει τον μαθητή/όρισμα στον διάδρομο
 void Corridor::enter(Student& student) {
     cout << student.get_name() << " enters corridor!" << endl;
     students[student_num] = &student;
@@ -144,6 +162,7 @@ void Corridor::enter(Student& student) {
     student.set_position(at_corridor);
 }
 
+// Αφαιρεί τον τελευταίο μαθητή από τον διάδρομο και επιστρέφει δείκτη σε αυτόν
 Student* Corridor::exit() {
     if (student_num == 0) {
         return NULL;
@@ -153,6 +172,7 @@ Student* Corridor::exit() {
     return students[student_num];
 }
 
+// Συνάρτηση εκτύπωσης της Corridor
 void Corridor::print() const {
     cout << "People in corridor are: " << endl;
     for (int i = 0 ; i < student_num ; i++) {
@@ -160,6 +180,7 @@ void Corridor::print() const {
     }
 }
 
+// Constructor της Class
 Class::Class(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
@@ -167,11 +188,13 @@ Class::Class(int init_capacity) : capacity(init_capacity) {
     cout << "A New Class has been created!" << endl;
 }
 
+// Destructor της Class
 Class::~Class() {
     cout << "A Class to be destroyed!" << endl;
     delete[] students;
 }
 
+// Βάζει τον μαθητή/όρισμα στην τάξη
 void Class::enter(Student& student) {
     cout << student.get_name() << " enters class!" << endl;
     students[student_num] = &student;
@@ -179,6 +202,13 @@ void Class::enter(Student& student) {
     student.set_position(at_class);
 }
 
+// Τοποθετεί τον δάσκαλο/όρισμα στην τάξη
+void Class::place(Teacher& teacher_in) {
+    teacher = &teacher_in;
+    teacher_in.set_in();
+}
+
+// Συνάρτηση εκτύπωσης της Class
 void Class::print(int class_number) const {
     cout << "People in class " << class_number + 1 << " are: " << endl;
     for (int i = 0 ; i < student_num ; i++) {
@@ -189,11 +219,7 @@ void Class::print(int class_number) const {
     }
 }
 
-void Class::place(Teacher& teacher_in) {
-    teacher = &teacher_in;
-    teacher_in.set_in();
-}
-
+// Constructor της Floor
 Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {
     for (int i = 0 ; i < 6 ; i++) {
         classes[i] = new Class(cclass);
@@ -201,6 +227,7 @@ Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {
     cout << "A New Floor has been created!" << endl;
 }
 
+// Destructor της Floor
 Floor::~Floor() {
     cout << "A Floor to be destroyed!" << endl;
     for (int i = 0 ; i < 6 ; i++) {
@@ -208,6 +235,7 @@ Floor::~Floor() {
     }
 }
 
+// Βάζει τον μαθητή/όρισμα στον όροφο, βάζοντάς τον στον διάδρομο αν χωράει
 void Floor::enter(Student& student) {
     cout << student.get_name() << " enters floor!" << endl;
     corridor.enter(student);
@@ -217,6 +245,7 @@ void Floor::enter(Student& student) {
     }
 }
 
+// Συνάρτηση εκτύπωσης της Floor
 void Floor::print(int floor_number) const {
     cout << "Floor number " << floor_number + 1 << " contains: " << endl;
     corridor.print();
@@ -225,6 +254,7 @@ void Floor::print(int floor_number) const {
     }
 }
 
+// Constructor της School
 School::School(int cclass, int cyard, int cstair, int ccorr)
 :   yard(cyard), stairs(cstair)
 {
@@ -234,6 +264,7 @@ School::School(int cclass, int cyard, int cstair, int ccorr)
     cout << "A New School has been created!" << endl;
 }
 
+// Destructor της School
 School::~School() {
     cout << "A School to be destroyed!" << endl;
     for (int i = 0 ; i < 3 ; i++) {
@@ -241,6 +272,8 @@ School::~School() {
     }
 }
 
+// Βάζει τον μαθητή/όρισμα στο σχολείο, πηγαίνοντάς τον όσο πιο κοντά γίνεται
+// στην τάξη του. Επιστρέφει το αν μπόρεσε να μπει τουλάχιστον στην αυλή ή όχι.
 bool School::enter(Student& student) {
     cout << student.get_name() << " enters school!" << endl;
     if (yard.full()) {
@@ -259,6 +292,9 @@ bool School::enter(Student& student) {
     return true;
 }
 
+// Βάζει τους μαθητές/όρισμα στο σχολείο, μετακινόντας τους σε "κύματα",
+// πηγαίνοντάς τους τελικά όσο κοντά γίνεται στις τάξεις τους. Επιστρέφει
+// το αν μπόρεσαν όλοι οι μαθητές να μπουν τουλάχιστον στην αυλή ή όχι.
 bool School::enter(Student** students, int size) {
     for (int i = 0 ; i < size ; i++) {
         cout << students[i]->get_name() << " enters school!" << endl;
@@ -295,6 +331,7 @@ bool School::enter(Student** students, int size) {
     }
 }
 
+// Συνάρτηση εκτύπωσης της School
 void School::print() const {
     cout << "School life consists of: " << endl;
     yard.print();
