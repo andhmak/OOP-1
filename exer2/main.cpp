@@ -72,7 +72,6 @@ class Pair {
             else {
                 second_to_swap = &other->second;
             }
-            (*first_to_swap)->print();
             temp = *first_to_swap;
             *first_to_swap = *second_to_swap;
             *second_to_swap = temp;
@@ -290,21 +289,22 @@ class School {
                 int continuous_messy = 0;
                 for (int j = 0 ; j < sequences[i]->get_size() ; j++) {
                     if (!(rand() % messiness_chance)) {
+                        Pair* curr_pair = sequences[i]->get_ith(j);
                         continuous_messy++;
                         messy_amount[i]++;
-                        if (sequences[i]->get_ith(j)->only_male()) {
-                            sequences[i]->get_ith(j)->get_student(true)->set_messy(true);
+                        if (curr_pair->only_male()) {
+                            curr_pair->get_student(true)->set_messy(true);
                         }
-                        else if (sequences[i]->get_ith(j)->only_female()) {
-                            sequences[i]->get_ith(j)->get_student(false)->set_messy(true);
+                        else if (curr_pair->only_female()) {
+                            curr_pair->get_student(false)->set_messy(true);
                         }
                         else {
                             if (rand() % 2) {
-                                sequences[i]->get_ith(j)->get_student(true)->set_messy(true);
-                                sequences[i]->get_ith(j)->get_student(false)->set_messy(true);
+                                curr_pair->get_student(true)->set_messy(true);
+                                curr_pair->get_student(false)->set_messy(true);
                             }
                             else {
-                                sequences[i]->get_ith(j)->get_student(rand() % 2)->set_messy(true);
+                                curr_pair->get_student(rand() % 2)->set_messy(true);
                             }
                         }
                     }
@@ -317,45 +317,85 @@ class School {
                 }
             }
             for (int i = 0 ; i < size ; i++) {
+                int sequence_size = sequences[i]->get_size();
                 if (messy_amount[i] <= 2) {
                     int other_pair_position;
-                    Pair *messy_pair, *other_pair;
-                    for
-                    (StudentListNode* messy_student = list->get_first() ;
-                    messy_student != NULL ;
-                    messy_student = messy_student->get_next())
-                    {   
-                        messy_pair = sequences[i]->get_ith(messy_student->get_position());
-                        sequences[messy_pair->get_student(messy_student->is_male())->get_classroom_id()]->increase_messiness(1);
-                    }
-                    for
-                    (StudentListNode* messy_student = list->get_first() ;
-                    messy_student != NULL ;
-                    messy_student = messy_student->get_next())
-                    {
-                        while (true) {
-                            other_pair_position = rand() % sequences[i]->get_size();
-                            if (other_pair_position != messy_student->get_position()) {
-                                break;
+                    Pair *curr_pair, *other_pair;
+                    Student *male, *female;
+                    for (int j = 0 ; j < sequence_size ; j++) {
+                        curr_pair = sequences[i]->get_ith(j);
+                        male = curr_pair->get_student(true);
+                        female = curr_pair->get_student(false);
+                        if (male->get_messy()) {
+                            male->set_messy(false);
+                            while (true) {
+                                other_pair_position = rand() % sequence_size;
+                                if (other_pair_position != j) {
+                                    break;
+                                }
+                            }
+                            other_pair = sequences[i]->get_ith(other_pair_position);
+                            sequences[male->get_classroom_id()]->increase_messiness(1);
+                            if (female->get_messy()) {
+                                female->set_messy(false);
+                                sequences[female->get_classroom_id()]->increase_messiness(1);
+                                cout << "Students being messy:" << endl;
+                                male->print();
+                                female->print();
+                            }
+                            else {
+                                cout << "Students being messy:" << endl;
+                                male->print();
+                            }
+                            if (other_pair->get_student(true)->get_messy()) {
+                                other_pair->get_student(true)->set_messy(false);
+                                other_pair->get_student(true)->print();
+                                sequences[other_pair->get_student(true)->get_classroom_id()]->increase_messiness(1);
+                            }
+                            if (other_pair->get_student(false)->get_messy()) {
+                                other_pair->get_student(false)->set_messy(false);
+                                other_pair->get_student(false)->print();
+                                sequences[other_pair->get_student(false)->get_classroom_id()]->increase_messiness(1);
+                            }
+                            curr_pair->swap(other_pair, true);
+                            cout << "Sequence " << i + 1 << ":" << endl;
+                            sequences[i]->print(tquiet, tmessy);
+                        }
+                        else {
+                            if (female->get_messy()) {
+                                female->set_messy(false);
+                                while (true) {
+                                    other_pair_position = rand() % sequence_size;
+                                    if (other_pair_position != j) {
+                                        break;
+                                    }
+                                }
+                                other_pair = sequences[i]->get_ith(other_pair_position);
+                                sequences[female->get_classroom_id()]->increase_messiness(1);
+                                cout << "Students being messy:" << endl;
+                                female->print();
+                                if (other_pair->get_student(true)->get_messy()) {
+                                    other_pair->get_student(true)->set_messy(false);
+                                    other_pair->get_student(true)->print();
+                                    sequences[other_pair->get_student(true)->get_classroom_id()]->increase_messiness(1);
+                                }
+                                if (other_pair->get_student(false)->get_messy()) {
+                                    other_pair->get_student(false)->set_messy(false);
+                                    other_pair->get_student(false)->print();
+                                    sequences[other_pair->get_student(false)->get_classroom_id()]->increase_messiness(1);
+                                }
+                                curr_pair->swap(other_pair, false);
+                                cout << "Sequence " << i + 1 << ":" << endl;
+                                sequences[i]->print(tquiet, tmessy);
                             }
                         }
-                        messy_pair = sequences[i]->get_ith(messy_student->get_position());
-                        other_pair = sequences[i]->get_ith(other_pair_position);
-                        cout << "Student being moved:" << endl;
-                        messy_pair->swap(other_pair, messy_student->is_male());
-                        cout << "Sequence " << i + 1 << ":" << endl;
-                        sequences[i]->print(tquiet, tmessy);
                     }
                 }
                 else if (!enough_continuous[i]) {
                     int other_pair_position;
                     int other_sequence = (i < (size - 1)) ? i + 1 : 0;
                     Pair *messy_pair, *other_pair;
-                    for
-                    (StudentListNode* messy_student = list->get_first() ;
-                    messy_student != NULL ;
-                    messy_student = messy_student->get_next())
-                    {
+                    for (int j = 0 ; messy_student != NULL ; messy_student = messy_student->get_next()) {
                         messy_pair = sequences[i]->get_ith(messy_student->get_position());
                         other_pair_position = rand() % sequences[other_sequence]->get_size();
                         other_pair = sequences[other_sequence]->get_ith(other_pair_position);
