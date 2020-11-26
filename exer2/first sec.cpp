@@ -58,33 +58,25 @@ class Pair {
             delete other;
             return this;
         }
-        void swap(Pair* other, bool male) {
-            Student *temp, **first_to_swap, **second_to_swap;
-            if (((this->first != NULL) && (this->first->is_male() == male)) || ((this->first == NULL) && (this->second->is_male() != male))) {
-                first_to_swap = &this->first;
+        void swap(Pair* other, bool first) {
+            Student *temp, **to_swap_with;
+            bool maleness = this->first->is_male();
+            if (((other->first != NULL) && (other->first->is_male() == maleness)) || ((other->first == NULL) && (other->second->is_male() != maleness))) {
+                to_swap_with = &other->first;
             }
             else {
-                first_to_swap = &this->second;
+                to_swap_with = &other->second;
             }
-            if (((other->first != NULL) && (other->first->is_male() == male)) || ((other->first == NULL) && (other->second->is_male() != male))) {
-                second_to_swap = &other->first;
-            }
-            else {
-                second_to_swap = &other->second;
-            }
-            temp = *first_to_swap;
-            *first_to_swap = *second_to_swap;
-            *second_to_swap = temp;
+            temp = this->first;
+            this->first = *to_swap_with;
+            *to_swap_with = temp;
         }
-        Student* get_student(bool male) const {
-            if ((first != NULL) && (first->is_male() == male)) {
+        Student* get_student(bool first_one) const {
+            if (first_one) {
                 return first;
             }
-            else if ((second != NULL) && (second->is_male() == male)) {
-                return second;
-            }
             else {
-                return NULL;
+                return second;
             }
         }
         bool male_first() const {
@@ -120,8 +112,8 @@ class Sequence {
     public:
         Sequence(Student** students, int student_amount)
         :   messiness(0), size((student_amount + 1)/2) {
-            int male_amount = 0;
-            for (int i = 0 ; i < student_amount ; i++) {
+            int i, male_amount = 0;
+            for (i = 0 ; i < student_amount ; i++) {
                 if (students[i]->is_male()) {
                     male_amount++;
                 }
@@ -131,9 +123,12 @@ class Sequence {
                 exit(-1);
             }
             pairs = new Pair*[size];
+            Student *male, *female;
+            bool is_male = true;
             int j = 0, k = 0;
-            for (int i = 0 ; i < size ; i++) {
-                Student *male = NULL, *female = NULL;
+            for (i = 0 ; i < size ; i++) {
+                male = NULL;
+                female = NULL;
                 for ( ; j < student_amount ; j++) {
                     if (students[j]->is_male()) {
                         male = students[j];
@@ -244,10 +239,10 @@ class School {
             int extra_pair_amount = (extra_males < extra_females) ? extra_males : extra_females;
             if (extra_pair_amount != 0) {
                 Pair* extra_pairs[extra_pair_amount];
+                Pair *male, *female;
                 bool male_first = !sequences[0]->get_last_full_pair()->male_first();
                 int j = 0, k = 0;
                 for (int i = 0 ; i < extra_pair_amount ; i++, male_first = !male_first) {
-                    Pair *male, *female;
                     for ( ; j < sequence_amount ; j++) {
                         if (sequences[j]->excess_male()) {
                             male = sequences[j]->trim();
@@ -580,29 +575,29 @@ int main(int argc, char* argv[]) {
         cerr << "There must be at least two classes (first argument)" << endl;
         return 3;
     }
-    int student_num = 21*k;
-    Student* students[k][21];
+    int student_num = 5*k;
+    Student* students[k][5];
     for (int i = 0 ; i < k ; i++) {
         if (i % 2) {
-            for (int j = 0 ; j < 10 ; j++) {
+            for (int j = 0 ; j < 2 ; j++) {
                 students[i][j] = new Student(male_names[rand() % 18], i, true);
             }
-            for (int j = 10 ; j < 21 ; j++) {
+            for (int j = 2 ; j < 5 ; j++) {
                 students[i][j] = new Student(female_names[rand() % 18], i, false);
             }
         }
         else {
-            for (int j = 0 ; j < 11 ; j++) {
+            for (int j = 0 ; j < 3 ; j++) {
                 students[i][j] = new Student(male_names[rand() % 18], i, true);
             }
-            for (int j = 11 ; j < 21 ; j++) {
+            for (int j = 3 ; j < 5 ; j++) {
                 students[i][j] = new Student(female_names[rand() % 18], i, false);
             }
         }
     }
     Sequence* sequences[k];
     for (int i = 0 ; i < k ; i++) {
-        sequences[i] = new Sequence(students[i], 21);
+        sequences[i] = new Sequence(students[i], 5);
     }
     School school(sequences, k, tquiet, tmessy);
     school.print();
@@ -613,7 +608,7 @@ int main(int argc, char* argv[]) {
     }
     school.print();
     for (int i = 0 ; i < k ; i++) {
-        for (int j = 0 ; j < 21 ; j++) {
+        for (int j = 0 ; j < 5 ; j++) {
             delete students[i][j];
         }
     }

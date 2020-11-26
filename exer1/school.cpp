@@ -119,10 +119,9 @@ void Stairs::enter(Student& student) {
 // Αφαιρεί τον τελευταίο μαθητή του οποίου η τάξη βρίσκεται στον
 // όροφο/όρισμα από το κλιμακοστάσιο και επιστρέφει δείκτη σε αυτό
 Student* Stairs::exit(short floor_num) {
-    Student* temp;
     for (int i = student_num - 1 ; i >= 0 ; i--) {
         if (students[i]->get_floor_num() == floor_num) {
-            temp = students[i];
+            Student* temp = students[i];
             students[i] = students[student_num - 1];
             students[student_num - 1] = temp;
             cout << students[student_num - 1]->get_name() << " exits stairs!" << endl;
@@ -300,10 +299,9 @@ bool School::enter(Student** students, int size) {
         cout << students[i]->get_name() << " enters school!" << endl;
     }
     int ammount_in = 0;
-    bool stagnated;
-    Student* to_enter;
     while (true) {
-        stagnated = true;
+        Student* to_enter;
+        bool stagnated = true;
         for ( ; (yard.full() == false) && (ammount_in != size) ; ammount_in++) {
             yard.enter(*students[ammount_in]);
         }
