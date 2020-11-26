@@ -283,11 +283,9 @@ class School {
                 enough_continuous[i] = false;
             }
             for (int i = 0 ; i < size ; i++) {
-                cout << i << endl;
                 int continuous_messy = 0;
                 for (int j = 0 ; j < sequences[i]->get_size() ; j++) {
                     if (!(rand() % messiness_chance)) {
-                        cout << "   " << j << endl;
                         Pair* curr_pair = sequences[i]->get_pair(j);
                         continuous_messy++;
                         messy_amount[i]++;
@@ -316,13 +314,10 @@ class School {
                 }
             }
             for (int i = 0 ; i < size ; i++) {
-                cout << i << endl;
                 int sequence_size = sequences[i]->get_size();
                 if (messy_amount[i] <= 2) {
-                    cout << "case 1" << endl;
                     int other_pair_position;
                     for (int j = 0 ; j < sequence_size ; j++) {
-                        cout << "   " << j << endl;
                         Pair* curr_pair = sequences[i]->get_pair(j);
                         Student* male = curr_pair->get_student(true);
                         Student* female = curr_pair->get_student(false);
@@ -363,18 +358,16 @@ class School {
                     }
                 }
                 else if (!enough_continuous[i]) {
-                    cout << "case 2" << endl;
                     int other_sequence_position = (i < (size - 1)) ? i + 1 : 0;
                     int other_messiness = 1 + (messy_amount[other_sequence_position] > 2);
                     int other_sequence_size = sequences[other_sequence_position]->get_size();
                     for (int j = 0 ; j < sequence_size ; j++) {
-                        cout << "   " << j << endl;
                         Pair* curr_pair = sequences[i]->get_pair(j);
                         Student* male = curr_pair->get_student(true);
                         Student* female = curr_pair->get_student(false);
                         if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {
                             cout << "Students being messy:" << endl;
-                            if ((male != NULL) && female->get_messy()) {
+                            if ((male != NULL) && male->get_messy()) {
                                 male->set_messy(false);
                                 sequences[male->get_classroom_id()]->increase_messiness(2);
                                 male->print();
@@ -406,9 +399,7 @@ class School {
                     }
                 }
                 else {
-                    cout << "case 3" << endl;
                     for (int j = 0 ; j < sequence_size ; j++) {
-                        cout << "   " << j << endl;
                         Pair* curr_pair = sequences[i]->get_pair(j);
                         Student* male = curr_pair->get_student(true);
                         Student* female = curr_pair->get_student(false);
@@ -432,6 +423,7 @@ class School {
                                 }
                             }
                             int other_messiness = 1 + (messy_amount[other_sequence_position] > 2);
+                            cout << other_messiness << "-----------------------------------------" << endl;
                             int other_pair_position = rand() % sequences[other_sequence_position]->get_size();
                             Pair* other_pair = sequences[other_sequence_position]->get_pair(other_pair_position);
                             Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
@@ -454,7 +446,6 @@ class School {
                     }
                 }
             }
-            cout << "end" << endl;
         }
         void print() const {
             for (int i = 0 ; i < size ; i++) {
@@ -504,7 +495,6 @@ int main(int argc, char* argv[]) {
     }
     School school(sequences, k, tquiet, tmessy);
     school.print();
-    cout << "---------------------------------------------------------------" << endl;
     srand(time(NULL));
     for (int i = 0 ; i < l ; i++) {
         school.mess();
