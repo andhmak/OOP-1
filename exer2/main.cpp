@@ -214,7 +214,7 @@ class Sequence {
         int get_size() const {
             return size;
         }
-        Pair* get_ith(int i) const {
+        Pair* get_pair(int i) const {
             return pairs[i];
         }
         void print(int tquiet, int tmessy) const {
@@ -288,7 +288,7 @@ class School {
                 for (int j = 0 ; j < sequences[i]->get_size() ; j++) {
                     if (!(rand() % messiness_chance)) {
                         cout << "   " << j << endl;
-                        Pair* curr_pair = sequences[i]->get_ith(j);
+                        Pair* curr_pair = sequences[i]->get_pair(j);
                         continuous_messy++;
                         messy_amount[i]++;
                         if (curr_pair->only_male()) {
@@ -321,237 +321,135 @@ class School {
                 if (messy_amount[i] <= 2) {
                     cout << "case 1" << endl;
                     int other_pair_position;
-                    Pair *curr_pair, *other_pair;
-                    Student *male, *female;
                     for (int j = 0 ; j < sequence_size ; j++) {
                         cout << "   " << j << endl;
-                        curr_pair = sequences[i]->get_ith(j);
-                        male = curr_pair->get_student(true);
-                        female = curr_pair->get_student(false);
-                        if ((male != NULL) && male->get_messy()) {
-                            male->set_messy(false);
+                        Pair* curr_pair = sequences[i]->get_pair(j);
+                        Student* male = curr_pair->get_student(true);
+                        Student* female = curr_pair->get_student(false);
+                        if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {
+                            cout << "Students being messy:" << endl;
+                            if ((male != NULL) && male->get_messy()) {
+                                male->set_messy(false);
+                                sequences[male->get_classroom_id()]->increase_messiness(1);
+                                male->print();
+                            }
+                            if ((female != NULL) && female->get_messy()) {
+                                female->set_messy(false);
+                                sequences[female->get_classroom_id()]->increase_messiness(1);
+                                female->print();
+                            }
                             while (true) {
                                 other_pair_position = rand() % sequence_size;
                                 if (other_pair_position != j) {
                                     break;
                                 }
                             }
-                            other_pair = sequences[i]->get_ith(other_pair_position);
-                            sequences[male->get_classroom_id()]->increase_messiness(1);
-                            if ((female != NULL) && female->get_messy()) {
-                                female->set_messy(false);
-                                sequences[female->get_classroom_id()]->increase_messiness(1);
-                                cout << "Students being messy:" << endl;
-                                male->print();
-                                female->print();
-                            }
-                            else {
-                                cout << "Students being messy:" << endl;
-                                male->print();
-                            }
+                            Pair* other_pair = sequences[i]->get_pair(other_pair_position);
                             Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
                             if ((other_male != NULL) && (other_male->get_messy())) {
                                 other_male->set_messy(false);
-                                other_male->print();
                                 sequences[other_male->get_classroom_id()]->increase_messiness(1);
+                                other_male->print();
                             }
                             if ((other_female != NULL) && (other_female->get_messy())) {
                                 other_female->set_messy(false);
-                                other_female->print();
                                 sequences[other_female->get_classroom_id()]->increase_messiness(1);
+                                other_female->print();
                             }
                             curr_pair->swap(other_pair, true);
                             cout << "Sequence " << i + 1 << ":" << endl;
                             sequences[i]->print(tquiet, tmessy);
-                        }
-                        else {
-                            if ((female != NULL) && female->get_messy()) {
-                                female->set_messy(false);
-                                while (true) {
-                                    other_pair_position = rand() % sequence_size;
-                                    if (other_pair_position != j) {
-                                        break;
-                                    }
-                                }
-                                other_pair = sequences[i]->get_ith(other_pair_position);
-                                sequences[female->get_classroom_id()]->increase_messiness(1);
-                                cout << "Students being messy:" << endl;
-                                female->print();
-                                Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
-                                if ((other_male != NULL) && (other_male->get_messy())) {
-                                    other_male->set_messy(false);
-                                    other_male->print();
-                                    sequences[other_male->get_classroom_id()]->increase_messiness(1);
-                                }
-                                if ((other_female != NULL) && (other_female->get_messy())) {
-                                    other_female->set_messy(false);
-                                    other_female->print();
-                                    sequences[other_female->get_classroom_id()]->increase_messiness(1);
-                                }
-                                curr_pair->swap(other_pair, false);
-                                cout << "Sequence " << i + 1 << ":" << endl;
-                                sequences[i]->print(tquiet, tmessy);
-                            }
                         }
                     }
                 }
                 else if (!enough_continuous[i]) {
                     cout << "case 2" << endl;
-                    int other_sequence = (i < (size - 1)) ? i + 1 : 0;
-                    int other_sequence_size = sequences[other_sequence]->get_size();
-                    int other_pair_position;
-                    Pair *curr_pair, *other_pair;
-                    Student *male, *female;
+                    int other_sequence_position = (i < (size - 1)) ? i + 1 : 0;
+                    int other_messiness = 1 + (messy_amount[other_sequence_position] > 2);
+                    int other_sequence_size = sequences[other_sequence_position]->get_size();
                     for (int j = 0 ; j < sequence_size ; j++) {
                         cout << "   " << j << endl;
-                        curr_pair = sequences[i]->get_ith(j);
-                        male = curr_pair->get_student(true);
-                        female = curr_pair->get_student(false);
-                        if ((male != NULL) && male->get_messy()) {
-                            male->set_messy(false);
-                            other_pair_position = rand() % other_sequence_size;
-                            other_pair = sequences[other_sequence]->get_ith(other_pair_position);
-                            sequences[male->get_classroom_id()]->increase_messiness(2);
+                        Pair* curr_pair = sequences[i]->get_pair(j);
+                        Student* male = curr_pair->get_student(true);
+                        Student* female = curr_pair->get_student(false);
+                        if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {
+                            cout << "Students being messy:" << endl;
+                            if ((male != NULL) && female->get_messy()) {
+                                male->set_messy(false);
+                                sequences[male->get_classroom_id()]->increase_messiness(2);
+                                male->print();
+                            }
                             if ((female != NULL) && female->get_messy()) {
                                 female->set_messy(false);
                                 sequences[female->get_classroom_id()]->increase_messiness(2);
-                                cout << "Students being messy:" << endl;
-                                male->print();
                                 female->print();
                             }
-                            else {
-                                cout << "Students being messy:" << endl;
-                                male->print();
-                            }
+                            int other_pair_position = rand() % other_sequence_size;
+                            Pair* other_pair = sequences[other_sequence_position]->get_pair(other_pair_position);
                             Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
                             if ((other_male != NULL) && (other_male->get_messy())) {
                                 other_male->set_messy(false);
                                 other_male->print();
-                                sequences[other_male->get_classroom_id()]->increase_messiness(1);
+                                sequences[other_male->get_classroom_id()]->increase_messiness(other_messiness);
                             }
                             if ((other_female != NULL) && (other_female->get_messy())) {
                                 other_female->set_messy(false);
                                 other_female->print();
-                                sequences[other_female->get_classroom_id()]->increase_messiness(1);
+                                sequences[other_female->get_classroom_id()]->increase_messiness(other_messiness);
                             }
                             curr_pair->swap(other_pair, true);
                             cout << "Sequence " << i + 1 << ":" << endl;
                             sequences[i]->print(tquiet, tmessy);
-                            cout << "Sequence " << other_sequence + 1 << ":" << endl;
-                            sequences[other_sequence]->print(tquiet, tmessy);
-                        }
-                        else {
-                            if ((female != NULL) && female->get_messy()) {
-                                female->set_messy(false);
-                                other_pair_position = rand() % other_sequence_size;
-                                other_pair = sequences[other_sequence]->get_ith(other_pair_position);
-                                sequences[female->get_classroom_id()]->increase_messiness(2);
-                                cout << "Students being messy:" << endl;
-                                female->print();
-                                Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
-                                if ((other_male != NULL) && (other_male->get_messy())) {
-                                    other_male->set_messy(false);
-                                    other_male->print();
-                                    sequences[other_male->get_classroom_id()]->increase_messiness(1);
-                                }
-                                if ((other_female != NULL) && (other_female->get_messy())) {
-                                    other_female->set_messy(false);
-                                    other_female->print();
-                                    sequences[other_female->get_classroom_id()]->increase_messiness(1);
-                                }
-                                curr_pair->swap(other_pair, false);
-                                cout << "Sequence " << i + 1 << ":" << endl;
-                                sequences[i]->print(tquiet, tmessy);
-                                cout << "Sequence " << other_sequence + 1 << ":" << endl;
-                                sequences[other_sequence]->print(tquiet, tmessy);
-                            }
+                            cout << "Sequence " << other_sequence_position + 1 << ":" << endl;
+                            sequences[other_sequence_position]->print(tquiet, tmessy);
                         }
                     }
                 }
                 else {
                     cout << "case 3" << endl;
-                    int other_sequence;
-                    int other_sequence_size;
-                    int other_pair_position;
-                    Pair *curr_pair, *other_pair;
-                    Student *male, *female;
                     for (int j = 0 ; j < sequence_size ; j++) {
                         cout << "   " << j << endl;
-                        curr_pair = sequences[i]->get_ith(j);
-                        male = curr_pair->get_student(true);
-                        female = curr_pair->get_student(false);
-                        if ((male != NULL) && male->get_messy()) {
-                            male->set_messy(false);
+                        Pair* curr_pair = sequences[i]->get_pair(j);
+                        Student* male = curr_pair->get_student(true);
+                        Student* female = curr_pair->get_student(false);
+                        if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {
+                            cout << "Students being messy:" << endl;
+                            if ((male != NULL) && male->get_messy()) {
+                                male->set_messy(false);
+                                sequences[male->get_classroom_id()]->increase_messiness(2);
+                                male->print();
+                            }
+                            if ((female != NULL) && female->get_messy()) {
+                                female->set_messy(false);
+                                sequences[female->get_classroom_id()]->increase_messiness(2);
+                                female->print();
+                            }
+                            int other_sequence_position;
                             while (true) {
-                                other_sequence = rand() % size;
-                                if (other_sequence != i) {
+                                other_sequence_position = rand() % size;
+                                if (other_sequence_position != i) {
                                     break;
                                 }
                             }
-                            other_sequence_size = sequences[other_sequence]->get_size();
-                            other_pair_position = rand() % other_sequence_size;
-                            other_pair = sequences[other_sequence]->get_ith(other_pair_position);
-                            sequences[male->get_classroom_id()]->increase_messiness(1);
-                            if ((female != NULL) && female->get_messy()) {
-                                female->set_messy(false);
-                                sequences[female->get_classroom_id()]->increase_messiness(1);
-                                cout << "Students being messy:" << endl;
-                                male->print();
-                                female->print();
-                            }
-                            else {
-                                cout << "Students being messy:" << endl;
-                                male->print();
-                            }
+                            int other_messiness = 1 + (messy_amount[other_sequence_position] > 2);
+                            int other_pair_position = rand() % sequences[other_sequence_position]->get_size();
+                            Pair* other_pair = sequences[other_sequence_position]->get_pair(other_pair_position);
                             Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
                             if ((other_male != NULL) && (other_male->get_messy())) {
                                 other_male->set_messy(false);
                                 other_male->print();
-                                sequences[other_male->get_classroom_id()]->increase_messiness(1);
+                                sequences[other_male->get_classroom_id()]->increase_messiness(other_messiness);
                             }
                             if ((other_female != NULL) && (other_female->get_messy())) {
                                 other_female->set_messy(false);
                                 other_female->print();
-                                sequences[other_female->get_classroom_id()]->increase_messiness(1);
+                                sequences[other_female->get_classroom_id()]->increase_messiness(other_messiness);
                             }
                             curr_pair->swap(other_pair, true);
                             cout << "Sequence " << i + 1 << ":" << endl;
                             sequences[i]->print(tquiet, tmessy);
-                            cout << "Sequence " << other_sequence + 1 << ":" << endl;
-                            sequences[other_sequence]->print(tquiet, tmessy);
-                        }
-                        else {
-                            if ((female != NULL) && female->get_messy()) {
-                                female->set_messy(false);
-                                while (true) {
-                                    other_sequence = rand() % size;
-                                    if (other_sequence != i) {
-                                        break;
-                                    }
-                                }
-                                other_sequence_size = sequences[other_sequence]->get_size();
-                                other_pair_position = rand() % other_sequence_size;
-                                other_pair = sequences[other_sequence]->get_ith(other_pair_position);
-                                sequences[female->get_classroom_id()]->increase_messiness(1);
-                                cout << "Students being messy:" << endl;
-                                female->print();
-                                Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
-                                if ((other_male != NULL) && (other_male->get_messy())) {
-                                    other_male->set_messy(false);
-                                    other_male->print();
-                                    sequences[other_male->get_classroom_id()]->increase_messiness(1);
-                                }
-                                if ((other_female != NULL) && (other_female->get_messy())) {
-                                    other_female->set_messy(false);
-                                    other_female->print();
-                                    sequences[other_female->get_classroom_id()]->increase_messiness(1);
-                                }
-                                curr_pair->swap(other_pair, false);
-                                cout << "Sequence " << i + 1 << ":" << endl;
-                                sequences[i]->print(tquiet, tmessy);
-                                cout << "Sequence " << other_sequence + 1 << ":" << endl;
-                                sequences[other_sequence]->print(tquiet, tmessy);
-                            }
+                            cout << "Sequence " << other_sequence_position + 1 << ":" << endl;
+                            sequences[other_sequence_position]->print(tquiet, tmessy);
                         }
                     }
                 }
