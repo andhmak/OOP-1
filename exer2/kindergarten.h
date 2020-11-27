@@ -3,21 +3,23 @@
 #include <iostream>
 #include <string>
 
+// Κλάση που αναπαριστά έναν μαθητή
 class Student {
-    std::string name;
-    int classroom_id;
-    bool male;
-    bool messy;
+    std::string name;   // όνομα του μαθητή
+    int classroom_id;   // index της τάξης του μαθητή
+    bool male;          // φύλο του μαθητή/το αν είναι αρσενικός
+    bool messy;         // το αν ο μαθητής κάνει αταξίες μια δεδομένη στιγμή
     public:
-        Student(const char* init_name, int init_classroom_id, bool init_male)
+        Student(const char* init_name, int init_classroom_id, bool init_male)   // Constructor
         :   name(init_name), classroom_id(init_classroom_id), male(init_male), messy(0) { }
-        bool is_male() const { return male; }
-        int get_classroom_id() const { return classroom_id; }
-        bool get_messy() const { return messy; }
-        void set_messy(bool to_be_messy) { messy = to_be_messy; }
-        void print() const { std::cout << name << ", class " << classroom_id + 1 << (male ? ", male" : ", female") << std::endl; }
+        void set_messy(bool to_be_messy) { messy = to_be_messy; }   // Mutator
+        bool is_male() const { return male; }                       // +
+        int get_classroom_id() const { return classroom_id; }       // |  Accessors
+        bool get_messy() const { return messy; }                    // +
+        void print() const { std::cout << name << ", class " << classroom_id + 1 << (male ? ", male" : ", female") << std::endl; }  // Συνάρτηση εκτύπωσης (εκτυπώνει το όνομα)
 };
 
+// Κλάση που αναπαριστά έναν ζαυγάρι μαθητών
 class Pair {
     Student* first;
     Student* second;
@@ -32,6 +34,7 @@ class Pair {
         void print(int position) const;
 };
 
+// Κλάση που αναπαριστά την ακολουθία ενός τμήματος κατά μια μετακίνηση
 class Sequence {
     int messiness;
     int size;
@@ -50,6 +53,7 @@ class Sequence {
         void print(int tquiet, int tmessy) const;
 };
 
+// Κλάση που αναπαριστά το σύνολο των ακολουθιών ενός τμήματος κατά μια μετακίνηση
 class Kindergarten {
     Sequence** sequences;
     int size;

@@ -15,9 +15,9 @@ class Student {
         Student(const char* init_name, short init_floor_num, short init_class_num); // Constructor
         ~Student();                                                                 // Destructor (εκτυπώνει και τα δεδομένα του μαθητή)
         void set_position(enum area new_position) { position = new_position; }      // Mutator
-        std::string get_name() const { return name; }                               // |
-        short get_floor_num() const { return floor_num; }                           // | --> Accessors
-        short get_class_num() const { return class_num; }                           // |
+        std::string get_name() const { return name; }                               // +
+        short get_floor_num() const { return floor_num; }                           // |  Accessors
+        short get_class_num() const { return class_num; }                           // +
         void print() const { std::cout << name << std::endl; }                      // Συνάρτηση εκτύπωσης (εκτυπώνει το όνομα)
 };
 
@@ -31,9 +31,9 @@ class Teacher {
         Teacher(const char* init_name, short init_floor_num, short init_class_num);     // Constructor
         ~Teacher();                                                                     // Destructor (εκτυπώνει και τα δεδομένα του δασκάλου)
         void set_in() { in = true; }                                                    // Mutator
-        short get_floor_num() const { return floor_num; }                               // |
-        short get_class_num() const { return class_num; }                               // | --> Accessors
-        bool is_in() const { return in; }                                               // |
+        short get_floor_num() const { return floor_num; }                               // +
+        short get_class_num() const { return class_num; }                               // |  Accessors
+        bool is_in() const { return in; }                                               // +
         void print() const { std::cout << "The teacher is: " << name << std::endl; }    // Συνάρτηση εκτύπωσης (εκτυπώνει το όνομα)
 };
 
