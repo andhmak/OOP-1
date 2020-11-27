@@ -36,13 +36,13 @@ int main(int argc, char* argv[]) {
     for (int i = 0 ; i < 3 ; i++) {
         for (int j = 0 ; j < 6 ; j++) {
             for (int k = 0 ; k < cclass ; k++) {
-                students[cclass*6*i + cclass*j + k] = new Student(names[rand() % 36], i, j);
+                students[cclass*6*i + cclass*j + k] = new Student(names[rand() % 48], i, j);
             }
         }
     }
     shuffle(students, student_num);
     for (int i = 0 ; i < 18 ; i++) {
-        teachers[i] = new Teacher(names[rand() % 36], i / 6, i % 6);
+        teachers[i] = new Teacher(names[rand() % 48], i / 6, i % 6);
     }
     for (int i = 0 ; i < student_num ; i++) {
         if ((rand() % 2) || (i + student_num/9 > student_num)) {

@@ -162,7 +162,7 @@ class Sequence {
             }
             delete[] pairs;
         }
-        Pair* trim() {
+        Pair* trim_space_efficient() {
             Pair** new_pairs = new Pair*[size - 1];
             for (int i = 0 ; i < size - 1 ; i++) {
                 new_pairs[i] = pairs[i];
@@ -173,7 +173,7 @@ class Sequence {
             size--;
             return excess;
         }
-        Pair* trim_time_efficient() {
+        Pair* trim() {
             size--;
             return pairs[size];
         }
@@ -474,18 +474,18 @@ int main(int argc, char* argv[]) {
     for (int i = 0 ; i < k ; i++) {
         if (i % 2) {
             for (int j = 0 ; j < 10 ; j++) {
-                students[i][j] = new Student(male_names[rand() % 18], i, true);
+                students[i][j] = new Student(male_names[rand() % 24], i, true);
             }
             for (int j = 10 ; j < 21 ; j++) {
-                students[i][j] = new Student(female_names[rand() % 18], i, false);
+                students[i][j] = new Student(female_names[rand() % 24], i, false);
             }
         }
         else {
             for (int j = 0 ; j < 11 ; j++) {
-                students[i][j] = new Student(male_names[rand() % 18], i, true);
+                students[i][j] = new Student(male_names[rand() % 24], i, true);
             }
             for (int j = 11 ; j < 21 ; j++) {
-                students[i][j] = new Student(female_names[rand() % 18], i, false);
+                students[i][j] = new Student(female_names[rand() % 24], i, false);
             }
         }
     }
