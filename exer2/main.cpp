@@ -14,7 +14,8 @@ int main(int argc, char* argv[]) {
         cerr << "Wrong number of arguments" << endl;
         return 1;
     }
-    int k = atoi(argv[1]), l = atoi(argv[2]), tquiet = atoi(argv[3]), tmessy = atoi(argv[4]);
+    int k = atoi(argv[1]), l = atoi(argv[2]);
+    double tquiet = atof(argv[3]), tmessy = atof(argv[4]);
     if (tquiet > tmessy) {
         cerr << "Quiet threshold (third argument) should be lower than messy threshold (fourth argument)" << endl;
         return 2;

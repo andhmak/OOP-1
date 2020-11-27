@@ -140,15 +140,16 @@ void Sequence::append(Pair** extra_pairs, int extra_amount) {
     size += extra_amount;
 }
 
-void Sequence::print(int tquiet, int tmessy) const {
+void Sequence::print(double tquiet, double tmessy) const {
+    double mess_percentage = messiness / (double) (2*size - (this->excess_male() || this->excess_female()));
     for (int i = 0 ; i < size ; i++) {
         pairs[i]->print(i);
     }
-    cout << ((messiness < tquiet) ? "What a quiet class!" : ((messiness <= tmessy) ? "Please, be quiet!" : "What a mess!")) << endl;
+    cout << ((mess_percentage < tquiet) ? "What a quiet class!" : ((mess_percentage <= tmessy) ? "Please, be quiet!" : "What a mess!")) << endl;
 }
 
 
-Kindergarten::Kindergarten(Sequence** init_sequences, int sequence_amount, int init_tquiet, int init_messy)
+Kindergarten::Kindergarten(Sequence** init_sequences, int sequence_amount, double init_tquiet, double init_messy)
 :   sequences(init_sequences), tquiet(init_tquiet), tmessy(init_messy), size(sequence_amount) {
     int extra_males = 0, extra_females = 0;
     for (int i = 0 ; i < sequence_amount ; i++) {
