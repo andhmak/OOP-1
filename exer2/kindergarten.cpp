@@ -8,6 +8,18 @@
 
 using namespace std;
 
+Student* Pair::get_student(bool male) const {
+    if ((first != NULL) && (first->is_male() == male)) {
+        return first;
+    }
+    else if ((second != NULL) && (second->is_male() == male)) {
+        return second;
+    }
+    else {
+        return NULL;
+    }
+}
+
 Pair* Pair::merge(Pair* other) {
     if (first == NULL) {
         first = second;
@@ -45,18 +57,6 @@ void Pair::swap(Pair* other, bool male) {
     temp = *first_to_swap;
     *first_to_swap = *second_to_swap;
     *second_to_swap = temp;
-}
-
-Student* Pair::get_student(bool male) const {
-    if ((first != NULL) && (first->is_male() == male)) {
-        return first;
-    }
-    else if ((second != NULL) && (second->is_male() == male)) {
-        return second;
-    }
-    else {
-        return NULL;
-    }
 }
 
 void Pair::print(int position) const {
