@@ -33,7 +33,7 @@ class Pair {
         bool only_female() const { return !((((first != NULL) && first->is_male())) || (((second != NULL) && second->is_male()))); }
         Pair* merge(Pair* other);
         void swap(Pair* other, bool male);
-        void print(int position) const; // Συνάρτηση εκτύπωσης
+        void print(int position) const; // Συνάρτηση εκτύπωσης (εκτυπώνει την θέση στην ακολουθία (όρισμα) και τους μαθητές του ζεύγους)
 };
 
 // Κλάση που αναπαριστά την ακολουθία ενός τμήματος κατά μια μετακίνηση
@@ -52,16 +52,16 @@ class Sequence {
         Pair* get_last_full_pair() const { return (pairs[size - 1]->only_female() || pairs[size - 1]->only_male()) ? pairs[size - 2] : pairs[size - 1]; }
         Pair* trim();
         void append(Pair** extra_pairs, int extra_amount);
-        void print(double tquiet, double tmessy) const;   // Συνάρτηση εκτύπωσης
+        void print(double tquiet, double tmessy) const; // Συνάρτηση εκτύπωσης ...
 };
 
 // Κλάση που αναπαριστά το σύνολο των ακολουθιών ενός παιδικού σταθμού κατά μια μετακίνηση
 class Kindergarten {
     Sequence** sequences;   // πίνακας ακολουθιών (δεικτών σε αντικείμενα ακολουθιών) του παιδικού σταθμού
     int size;               // πλήθος ακολουθιών στον παιδικό σταθμό
-    double tquiet, tmessy;  // 
+    double tquiet, tmessy;  // κατόφλια ησυχίας/αταξίας (ποσοστού αταξίας προς το πλήθος των μαθητών ενός τμήματος)
     public:
         Kindergarten(Sequence** init_sequences, int sequence_amount, double init_tquiet, double init_messy);  // Constructor
         void cause_mess();
-        void print() const; // Συνάρτηση εκτύπωσης
+        void print() const; // Συνάρτηση εκτύπωσης ...
 };

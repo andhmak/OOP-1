@@ -1,5 +1,8 @@
 /* File: school.h */
 
+#include <iostream>
+#include <string>
+
 // Αναπαράσταση του χώρου όπου βρίσκεται ένας μαθητής
 enum area {
     at_yard, at_stairs, at_corridor, at_class, outside
