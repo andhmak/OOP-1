@@ -6,7 +6,9 @@
 
 using namespace std;
 
-// Constructor της Student
+// Συναρτήσεις της Student
+
+// Constructor
 Student::Student(const char* init_name, short init_floor_num, short init_class_num)
 :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
 {
@@ -16,7 +18,7 @@ Student::Student(const char* init_name, short init_floor_num, short init_class_n
     cout << "Floor " << floor_num + 1 << ", class " << class_num + 1 << endl;
 }
 
-// Destructor της Student
+// Destructor
 Student::~Student() {
     cout << "A Student to be destroyed!" << endl;
     cout << name << endl;
@@ -39,7 +41,9 @@ Student::~Student() {
     }
 }
 
-// Constructor της Teacher
+// Συναρτήσεις της Teacher
+
+// Constructor
 Teacher::Teacher(const char* init_name, short init_floor_num, short init_class_num)
 :   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
 {
@@ -49,7 +53,7 @@ Teacher::Teacher(const char* init_name, short init_floor_num, short init_class_n
     cout << "Floor " << floor_num + 1  << ", class " << class_num + 1 << endl;
 }
 
-// Destructor της Teacher
+// Destructor
 Teacher::~Teacher() {
     cout << "A Teacher to be destroyed!" << endl;
     cout << name << endl;
@@ -57,14 +61,16 @@ Teacher::~Teacher() {
     cout << "Situated " << (in ? "in " : "outside ") << "the class" << endl;
 }
 
-// Constructor της Yard
+// Συναρτήσεις της Yard
+
+// Constructor
 Yard::Yard(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
     cout << "A New Yard has been created!" << endl;
 }
 
-// Destructor της Yard
+// Destructor
 Yard::~Yard() {
     cout << "A Yard to be destroyed!" << endl;
     delete[] students;
@@ -96,14 +102,16 @@ void Yard::print() const {
     }
 }
 
-// Constructor της Stairs
+// Συναρτήσεις της Stairs
+
+// Constructor
 Stairs::Stairs(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
     cout << "New Stairs have been created!" << endl;
 }
 
-// Destructor της Stairs
+// Destructor
 Stairs::~Stairs() {
     cout << "Stairs to be destroyed!" << endl;
     delete[] students;
@@ -141,14 +149,16 @@ void Stairs::print() const {
     }
 }
 
-// Constructor της Corridor
+// Συναρτήσεις της Corridor
+
+// Constructor
 Corridor::Corridor(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
     cout << "A New Corridor has been created!" << endl;
 }
 
-// Destructor της Corridor
+// Destructor
 Corridor::~Corridor() {
     cout << "A Corridor to be destroyed!" << endl;
     delete[] students;
@@ -180,7 +190,9 @@ void Corridor::print() const {
     }
 }
 
-// Constructor της Class
+// Συναρτήσεις της Class
+
+// Constructor
 Class::Class(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
@@ -188,7 +200,7 @@ Class::Class(int init_capacity) : capacity(init_capacity) {
     cout << "A New Class has been created!" << endl;
 }
 
-// Destructor της Class
+// Destructor
 Class::~Class() {
     cout << "A Class to be destroyed!" << endl;
     delete[] students;
@@ -219,7 +231,9 @@ void Class::print(short class_number) const {
     }
 }
 
-// Constructor της Floor
+// Συναρτήσεις της Floor
+
+// Constructor
 Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {
     for (char i = 0 ; i < 6 ; i++) {
         classes[i] = new Class(cclass);
@@ -227,7 +241,7 @@ Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {
     cout << "A New Floor has been created!" << endl;
 }
 
-// Destructor της Floor
+// Destructor
 Floor::~Floor() {
     cout << "A Floor to be destroyed!" << endl;
     for (char i = 0 ; i < 6 ; i++) {
@@ -254,7 +268,9 @@ void Floor::print(short floor_number) const {
     }
 }
 
-// Constructor της School
+// Συναρτήσεις της School
+
+// Constructor
 School::School(int cclass, int cyard, int cstair, int ccorr)
 :   yard(cyard), stairs(cstair)
 {
@@ -264,7 +280,7 @@ School::School(int cclass, int cyard, int cstair, int ccorr)
     cout << "A New School has been created!" << endl;
 }
 
-// Destructor της School
+// Destructor
 School::~School() {
     cout << "A School to be destroyed!" << endl;
     for (char i = 0 ; i < 3 ; i++) {

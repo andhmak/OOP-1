@@ -7,6 +7,9 @@
 
 using namespace std;
 
+// Συναρτήσεις της Pair
+
+// επιστρέφει τον μαθητή του φύλου που δίνεται σαν όρισμα
 Student* Pair::get_student(bool male) const {
     if ((first != NULL) && (first->is_male() == male)) {
         return first;
@@ -19,6 +22,7 @@ Student* Pair::get_student(bool male) const {
     }
 }
 
+// εφαρμόζεται σε μη πλήρες ζευγάρι και δέχεται μη πλήρες ζευγάρι, τα ενώνει και επιστρέφει δείκτη στο νέο
 Pair* Pair::merge(Pair* other) {
     if (first == NULL) {
         first = second;
@@ -39,6 +43,7 @@ Pair* Pair::merge(Pair* other) {
     return this;
 }
 
+// αντιμεταθέτει τους μαθητές του φίλου που ορίζεται, μεταξύ των ζευγαριών this και other
 void Pair::swap(Pair* other, bool male) {
     Student *temp, **first_to_swap, **second_to_swap;
     if (((this->first != NULL) && (this->first->is_male() == male)) || ((this->first == NULL) && (this->second->is_male() != male))) {
@@ -58,6 +63,7 @@ void Pair::swap(Pair* other, bool male) {
     *second_to_swap = temp;
 }
 
+// εκτυπώνει την θέση στην ακολουθία (position) και τους μαθητές του ζεύγους
 void Pair::print(int position) const {
     cout << "Position " << position + 1 << ":" << endl;
     if (first != NULL) {
@@ -74,7 +80,9 @@ void Pair::print(int position) const {
     }
 }
 
+// Συναρτήσεις της Sequence
 
+// Constructor
 Sequence::Sequence(Student** students, int student_amount)
 :   messiness(0), size((student_amount + 1)/2) {
     int male_amount = 0;
@@ -114,6 +122,7 @@ Sequence::Sequence(Student** students, int student_amount)
     }
 }
 
+// Destructor
 Sequence::~Sequence() {
     for (int i = 0 ; i < size ; i++) {
         delete pairs[i];
@@ -121,11 +130,27 @@ Sequence::~Sequence() {
     delete[] pairs;
 }
 
+// αφαιρεί το τελευταίο ζευγάρι από την ακολουθία και απιστρέφει δείκτη σε αυτό
 Pair* Sequence::trim() {
     size--;
     return pairs[size];
 }
 
+/*
+Pair* Pair::trim_space_efficient() {
+    Pair** new_pairs = new Pair*[size - 1];
+    for (int i = 0 ; i < size - 1 ; i++) {
+        new_pairs[i] = pairs[i];
+    }
+    Pair* excess = pairs[size - 1];
+    delete[] pairs;
+    pairs = new_pairs;
+    size--;
+    return excess;
+}
+*/
+
+// προσθέτει τα ζευγάρια που δίνονται στο τέλος της ακολουθίας
 void Sequence::append(Pair** extra_pairs, int extra_amount) {
     Pair** new_pairs = new Pair*[size + extra_amount];
     for (int i = 0 ; i < size ; i++) {
@@ -139,6 +164,7 @@ void Sequence::append(Pair** extra_pairs, int extra_amount) {
     size += extra_amount;
 }
 
+// εκτυπώνει τα ζευγάρια και το κατάλληλο μήνυμα ανάλογα με το ποσοστό αταξίας του τμήματος και τα κατόφλια tquiet και tmessy
 void Sequence::print(double tquiet, double tmessy) const {
     double mess_percentage = messiness / (double) (2*size - (this->excess_male() || this->excess_female()));
     for (int i = 0 ; i < size ; i++) {
@@ -147,7 +173,9 @@ void Sequence::print(double tquiet, double tmessy) const {
     cout << ((mess_percentage < tquiet) ? "What a quiet class!" : ((mess_percentage <= tmessy) ? "Please, be quiet!" : "What a mess!")) << endl;
 }
 
+// Συναρτήσεις της Kindergarten
 
+// Constructor
 Kindergarten::Kindergarten(Sequence** init_sequences, int sequence_amount, double init_tquiet, double init_messy)
 :   sequences(init_sequences), tquiet(init_tquiet), tmessy(init_messy), size(sequence_amount) {
     int extra_males = 0, extra_females = 0;
@@ -191,6 +219,7 @@ Kindergarten::Kindergarten(Sequence** init_sequences, int sequence_amount, doubl
     }
 }
 
+// επιλέγονται τυχαία μαθητές να κάνουν αταξίες, οπότε έπειτα γίνονται οι απαραίτητες διαδικασίες
 void Kindergarten::cause_mess() {
     const int messiness_chance = 5;
     int messy_amount[size];
@@ -367,21 +396,10 @@ void Kindergarten::cause_mess() {
     }
 }
 
+// εκτυπώνει όλες τις ακολουθίες ζευγαριών στον παιδικό σταθμό
 void Kindergarten::print() const {
     for (int i = 0 ; i < size ; i++) {
         cout << "Sequence " << i + 1 << ":" << endl;
         sequences[i]->print(tquiet, tmessy);
     }
 }
-
-//    Pair* trim_space_efficient() {
-//        Pair** new_pairs = new Pair*[size - 1];
-//        for (int i = 0 ; i < size - 1 ; i++) {
-//            new_pairs[i] = pairs[i];
-//        }
-//        Pair* excess = pairs[size - 1];
-//        delete[] pairs;
-//        pairs = new_pairs;
-//        size--;
-//        return excess;
-//    }
