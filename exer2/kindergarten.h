@@ -16,7 +16,7 @@ class Student {
         bool is_male() const { return male; }                       // +
         int get_classroom_id() const { return classroom_id; }       // |  Accessors
         bool get_messy() const { return messy; }                    // +
-        void print() const {    // Συνάρτηση εκτύπωσης (εκτυπώνει το όνομα, την τάξη και το φύλο)
+        void print() const {    // εκτυπώνει το όνομα, την τάξη και το φύλο
             std::cout << name << ", class " << classroom_id + 1 << (male ? ", male" : ", female") << std::endl;
         }
 };
@@ -27,13 +27,15 @@ class Pair {
     Student* second;    // δείκτης στον δεύτερο μαθητή του ζεύγους
     public:
         Pair(Student* init_first, Student* init_second) : first(init_first), second(init_second) { }    // Constructor
-        Student* get_student(bool male) const;
-        bool male_first() const { return first->is_male(); }
+        Student* get_student(bool male) const;                  // επιστρέφει τον μαθητή του φύλου που δίνεται σαν όρισμα
+        bool male_first() const { return first->is_male(); }    // επιστρέφει αν ο πρώτος μαθητής στο ζευγάρι είναι αρσενικός
+        // επιστρέφει αν το ζευγάρι περιέχει μόνο αρσενικό μαθητή
         bool only_male() const { return !((((first != NULL) && !first->is_male())) || (((second != NULL) && !second->is_male()))); }
+        // επιστρέφει αν το ζευγάρι περιέχει μόνο θηλυκό μαθητή
         bool only_female() const { return !((((first != NULL) && first->is_male())) || (((second != NULL) && second->is_male()))); }
-        Pair* merge(Pair* other);
-        void swap(Pair* other, bool male);
-        void print(int position) const; // Συνάρτηση εκτύπωσης (εκτυπώνει την θέση στην ακολουθία (όρισμα) και τους μαθητές του ζεύγους)
+        Pair* merge(Pair* other);           // εφαρμόζεται σε μη πλήρες ζευγάρι και δέχεται μη πλήρες ζευγάρι, τα ενώνει και επιστρέφει δείκτη στο νέο
+        void swap(Pair* other, bool male);  // ανάμεσα στο ζευγάρι στο οποίο εφαρμόζεται και αυτό του ορίσματος, αντιμεταθέτει τον μαθητή του φίλου που ορίζεται
+        void print(int position) const;     // εκτυπώνει την θέση στην ακολουθία (position) και τους μαθητές του ζεύγους
 };
 
 // Κλάση που αναπαριστά την ακολουθία ενός τμήματος κατά μια μετακίνηση
@@ -44,15 +46,18 @@ class Sequence {
     public:
         Sequence(Student** students, int student_amount);   // Constructor
         ~Sequence();    // Destructor
-        int get_size() const { return size; }
-        Pair* get_pair(int i) const { return pairs[i]; }
-        void increase_messiness(int amount) { messiness += amount; }
-        bool excess_male() const { return pairs[size - 1]->only_male(); }
-        bool excess_female() const { return pairs[size - 1]->only_female(); }
+        int get_size() const { return size; }   // επιστρέφει το πλήθος ζευγαριών στην ακολουθία
+        Pair* get_pair(int i) const { return pairs[i]; }    // επιστρέφει το ζευγάρι στην θέση i της ακολουθίας
+        void increase_messiness(int amount) { messiness += amount; }            // αυξάνει τον βαθμό αταξίας κατά amount
+        bool excess_male() const { return pairs[size - 1]->only_male(); }       // επιστρέφει το αν η ακολουθία έχει παραπάνω αγόρια από κορίτσια
+        bool excess_female() const { return pairs[size - 1]->only_female(); }   // επιστρέφει το αν η ακολουθία έχει παραπάνω κορίτσια από αγόρια
+        // επιστρέφει το τελευταίο πλήρες ζευγάρι της ακολουθίας
         Pair* get_last_full_pair() const { return (pairs[size - 1]->only_female() || pairs[size - 1]->only_male()) ? pairs[size - 2] : pairs[size - 1]; }
-        Pair* trim();
-        void append(Pair** extra_pairs, int extra_amount);
-        void print(double tquiet, double tmessy) const; // Συνάρτηση εκτύπωσης ...
+        Pair* trim();       // αφαιρεί το τελευταίο ζευγάρι από την ακολουθία και απιστρέφει δείκτη σε αυτό
+        void append(Pair** extra_pairs, int extra_amount);  // προσθέτει τα ζευγάρια που δίνονται στο τέλος της ακολουθίας
+        // εκτυπώνει τα ζευγάρια και το κατάλληλο μήνυμα ανάλογα με το ποσοστό αταξίας του τμήματος και τα κατόφλια tquiet και tmessy
+        void print(double tquiet, double tmessy) const;
+                                                        
 };
 
 // Κλάση που αναπαριστά το σύνολο των ακολουθιών ενός παιδικού σταθμού κατά μια μετακίνηση
@@ -62,6 +67,6 @@ class Kindergarten {
     double tquiet, tmessy;  // κατόφλια ησυχίας/αταξίας (ποσοστού αταξίας προς το πλήθος των μαθητών ενός τμήματος)
     public:
         Kindergarten(Sequence** init_sequences, int sequence_amount, double init_tquiet, double init_messy);  // Constructor
-        void cause_mess();
-        void print() const; // Συνάρτηση εκτύπωσης ...
+        void cause_mess();  // επιλέγονται τυχαία μαθητές να κάνουν αταξίες, οπότε έπειτα γίνονται οι απαραίτητες διαδικασίες
+        void print() const; // εκτυπώνει όλες τις ακολουθίες ζευγαριών στον παιδικό σταθμό
 };
