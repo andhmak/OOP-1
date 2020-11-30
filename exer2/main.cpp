@@ -10,6 +10,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+    // αρχικοποίηση με ορίσματα από γραμμή εντολής
     if (argc != 5) {
         cerr << "Wrong number of arguments" << endl;
         return 1;
@@ -24,11 +25,15 @@ int main(int argc, char* argv[]) {
         cerr << "There must be at least two classes (first argument)" << endl;
         return 3;
     }
+
+    // αρχικοποίηση της rand()
     srand(time(NULL));
-    int student_num = 21*k;
+
+    // δημιουργία 21 μαθητών σε κάθε ένα από τα k τμήματα, με τυχαία ονόματα
+    const int student_num = 21*k;
     Student* students[k][21];
     for (int i = 0 ; i < k ; i++) {
-        if (i % 2) {
+        if (i % 2) {    // εναλλάξ σε κάθε τμήμα υπάρχει ένα παραπάνω κορίτσι
             for (int j = 0 ; j < 10 ; j++) {
                 students[i][j] = new Student(male_names[rand() % 24], i, true);
             }
@@ -36,7 +41,7 @@ int main(int argc, char* argv[]) {
                 students[i][j] = new Student(female_names[rand() % 24], i, false);
             }
         }
-        else {
+        else {          // ή ένα παραπάνω αγόρι
             for (int j = 0 ; j < 11 ; j++) {
                 students[i][j] = new Student(male_names[rand() % 24], i, true);
             }
@@ -45,23 +50,38 @@ int main(int argc, char* argv[]) {
             }
         }
     }
+
+    // τοποθέτηση των μαθητών των τμημάτων σε ακολουθίες
     Sequence* sequences[k];
     for (int i = 0 ; i < k ; i++) {
         sequences[i] = new Sequence(students[i], 21);
     }
-    Kindergarten kindergarten(sequences, k, tquiet, tmessy);
-    kindergarten.print();
+
+    // τοποθέτηση των ακολουθιών σε μια υπερακολουθία
+    Supersequence supersequence(sequences, k, tquiet, tmessy);
+
+    // εκτύπωση της υπερακολουθίας
+    supersequence.print();
+
+    // l φορές επιλογή τυχαίων μαθητών να κάνουν αταξίες, και έπειτα να γίνονται οι απαραίτητες διαδικασίες
     for (int i = 0 ; i < l ; i++) {
-        kindergarten.cause_mess();
+        supersequence.cause_mess();
     }
-    kindergarten.print();
+
+    // επανεκτύπωση της υπερακολουθίας
+    supersequence.print();
+
+    // απελευθέρωση μνήμης μαθητών
     for (int i = 0 ; i < k ; i++) {
         for (int j = 0 ; j < 21 ; j++) {
             delete students[i][j];
         }
     }
+
+    // απελευθέρωση μνήμης ακολουθιών
     for (int i = 0 ; i < k ; i++) {
         delete sequences[i];
     }
+    
     return 0;
 }

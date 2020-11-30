@@ -61,12 +61,12 @@ class Sequence {
 };
 
 // Κλάση που αναπαριστά το σύνολο των ακολουθιών ενός παιδικού σταθμού κατά μια μετακίνηση
-class Kindergarten {
+class Supersequence {
     Sequence** sequences;   // πίνακας ακολουθιών (δεικτών σε αντικείμενα ακολουθιών) του παιδικού σταθμού
     int size;               // πλήθος ακολουθιών στον παιδικό σταθμό
     double tquiet, tmessy;  // κατόφλια ησυχίας/αταξίας (ποσοστού αταξίας προς το πλήθος των μαθητών ενός τμήματος)
     public:
-        Kindergarten(Sequence** init_sequences, int sequence_amount, double init_tquiet, double init_messy);  // Constructor
+        Supersequence(Sequence** init_sequences, int sequence_amount, double init_tquiet, double init_messy);  // Constructor
         void cause_mess();  // επιλέγονται τυχαία μαθητές να κάνουν αταξίες, οπότε έπειτα γίνονται οι απαραίτητες διαδικασίες
         void print() const; // εκτυπώνει όλες τις ακολουθίες ζευγαριών στον παιδικό σταθμό
 };

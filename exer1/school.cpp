@@ -9,20 +9,20 @@ using namespace std;
 // Συναρτήσεις της Student
 
 // Constructor
-Student::Student(const char* init_name, short init_floor_num, short init_class_num)
-:   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
+Student::Student(const char* init_name, short init_floor_num, short init_classroom_num)
+:   name(init_name), floor_num(init_floor_num), classroom_num(init_classroom_num)
 {
     position = outside;
     cout << "A New Student has been created!" << endl;
     cout << name << endl;
-    cout << "Floor " << floor_num + 1 << ", class " << class_num + 1 << endl;
+    cout << "Floor " << floor_num + 1 << ", classroom " << classroom_num + 1 << endl;
 }
 
 // Destructor
 Student::~Student() {
     cout << "A Student to be destroyed!" << endl;
     cout << name << endl;
-    cout << "Floor " << floor_num + 1 << ", class " << class_num + 1<< endl;
+    cout << "Floor " << floor_num + 1 << ", classroom " << classroom_num + 1<< endl;
     switch (position) {
         case at_yard:
             cout << "Situated in the yard" << endl;
@@ -33,8 +33,8 @@ Student::~Student() {
         case at_corridor:
             cout << "Situated in the corridor" << endl;
             break;
-        case at_class:
-            cout << "Situated in the class" << endl;
+        case at_classroom:
+            cout << "Situated in the classroom" << endl;
             break;
         case outside:
             cout << "Situated outside" << endl;
@@ -44,21 +44,21 @@ Student::~Student() {
 // Συναρτήσεις της Teacher
 
 // Constructor
-Teacher::Teacher(const char* init_name, short init_floor_num, short init_class_num)
-:   name(init_name), floor_num(init_floor_num), class_num(init_class_num)
+Teacher::Teacher(const char* init_name, short init_floor_num, short init_classroom_num)
+:   name(init_name), floor_num(init_floor_num), classroom_num(init_classroom_num)
 {
     in = false;
     cout << "A New Teacher has been created!" << endl;
     cout << name << endl;
-    cout << "Floor " << floor_num + 1  << ", class " << class_num + 1 << endl;
+    cout << "Floor " << floor_num + 1  << ", classroom " << classroom_num + 1 << endl;
 }
 
 // Destructor
 Teacher::~Teacher() {
     cout << "A Teacher to be destroyed!" << endl;
     cout << name << endl;
-    cout << "Floor " << floor_num + 1 << ", class " << class_num  + 1 << endl;
-    cout << "Situated " << (in ? "in " : "outside ") << "the class" << endl;
+    cout << "Floor " << floor_num + 1 << ", classroom " << classroom_num  + 1 << endl;
+    cout << "Situated " << (in ? "in " : "outside ") << "the classroom" << endl;
 }
 
 // Συναρτήσεις της Yard
@@ -190,39 +190,39 @@ void Corridor::print() const {
     }
 }
 
-// Συναρτήσεις της Class
+// Συναρτήσεις της Classroom
 
 // Constructor
-Class::Class(int init_capacity) : capacity(init_capacity) {
+Classroom::Classroom(int init_capacity) : capacity(init_capacity) {
     students = new Student*[init_capacity];
     student_num = 0;
     teacher = NULL;
-    cout << "A New Class has been created!" << endl;
+    cout << "A New Classroom has been created!" << endl;
 }
 
 // Destructor
-Class::~Class() {
-    cout << "A Class to be destroyed!" << endl;
+Classroom::~Classroom() {
+    cout << "A Classroom to be destroyed!" << endl;
     delete[] students;
 }
 
 // Βάζει τον μαθητή/όρισμα στην τάξη
-void Class::enter(Student& student) {
-    cout << student.get_name() << " enters class!" << endl;
+void Classroom::enter(Student& student) {
+    cout << student.get_name() << " enters classroom!" << endl;
     students[student_num] = &student;
     student_num++;
-    student.set_position(at_class);
+    student.set_position(at_classroom);
 }
 
 // Τοποθετεί τον δάσκαλο/όρισμα στην τάξη
-void Class::place(Teacher& teacher_in) {
+void Classroom::place(Teacher& teacher_in) {
     teacher = &teacher_in;
     teacher_in.set_in();
 }
 
-// Συνάρτηση εκτύπωσης της Class
-void Class::print(short class_number) const {
-    cout << "People in class " << class_number + 1 << " are: " << endl;
+// Συνάρτηση εκτύπωσης της Classroom
+void Classroom::print(short classroom_number) const {
+    cout << "People in class " << classroom_number + 1 << " are: " << endl;
     for (int i = 0 ; i < student_num ; i++) {
         students[i]->print();
     }
@@ -236,7 +236,7 @@ void Class::print(short class_number) const {
 // Constructor
 Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {
     for (char i = 0 ; i < 6 ; i++) {
-        classes[i] = new Class(cclass);
+        classrooms[i] = new Classroom(cclass);
     }
     cout << "A New Floor has been created!" << endl;
 }
@@ -245,7 +245,7 @@ Floor::Floor(int cclass, int ccorr) : corridor(ccorr) {
 Floor::~Floor() {
     cout << "A Floor to be destroyed!" << endl;
     for (char i = 0 ; i < 6 ; i++) {
-        delete classes[i];
+        delete classrooms[i];
     }
 }
 
@@ -253,9 +253,9 @@ Floor::~Floor() {
 void Floor::enter(Student& student) {
     cout << student.get_name() << " enters floor!" << endl;
     corridor.enter(student);
-    if (classes[student.get_class_num()]->full() == false) {
+    if (classrooms[student.get_classroom_num()]->full() == false) {
         corridor.exit();
-        classes[student.get_class_num()]->enter(student);
+        classrooms[student.get_classroom_num()]->enter(student);
     }
 }
 
@@ -264,7 +264,7 @@ void Floor::print(short floor_number) const {
     cout << "Floor number " << floor_number + 1 << " contains: " << endl;
     corridor.print();
     for (char i = 0 ; i < 6 ; i++) {
-        classes[i]->print(i);
+        classrooms[i]->print(i);
     }
 }
 

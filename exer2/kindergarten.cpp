@@ -22,24 +22,20 @@ Student* Pair::get_student(bool male) const {
     }
 }
 
-// εφαρμόζεται σε μη πλήρες ζευγάρι και δέχεται μη πλήρες ζευγάρι, τα ενώνει και επιστρέφει δείκτη στο νέο
+// εφαρμόζεται σε μη πλήρες ζευγάρι και δέχεται μη πλήρες ζευγάρι, το δεύτερο ζευγάρι πρέπει να έχει δεσμευτεί στον σωρό 
+// τα ενώνει και επιστρέφει δείκτη στο νέο, με τον μαθητή του πρώτου ζευγαριού να βρίσκεται στην πρώτη θέση του νέου ζευγαριού
+// (οι προϋποθέσεις χρήσης της είναι σχετικά πολύπλοκες αλλά χρησιμοποιείται ελεγχόμενα από συναρτήσεις της Kindergarten, όχι από τον χρήστη)
 Pair* Pair::merge(Pair* other) {
-    if (first == NULL) {
-        first = second;
-        second = NULL;////////simplify later
+    if (this->first == NULL) {  // ο μαθητής του πρώτου ζευγαριού πρέπει να βρίσκεται στην πρώτη θέση
+        this->first = this->second;
     }
-    if (second == NULL) {
-        if (other->first != NULL) {
-            second = other->first;
-        }
-        else {
-            second = other->second;
-        }
+    if (other->first != NULL) { // στην δεύτερη θέση θα μπει ο μαθητής του δεύτερου ζευγαριού
+        this->second = other->first;
     }
     else {
-        return NULL;
+        this->second = other->second;
     }
-    delete other;
+    delete other;   // απελευθέρωση μνήμης δεύτερου ζευγαριού
     return this;
 }
 
@@ -176,7 +172,7 @@ void Sequence::print(double tquiet, double tmessy) const {
 // Συναρτήσεις της Kindergarten
 
 // Constructor
-Kindergarten::Kindergarten(Sequence** init_sequences, int sequence_amount, double init_tquiet, double init_messy)
+Supersequence::Supersequence(Sequence** init_sequences, int sequence_amount, double init_tquiet, double init_messy)
 :   sequences(init_sequences), tquiet(init_tquiet), tmessy(init_messy), size(sequence_amount) {
     int extra_males = 0, extra_females = 0;
     for (int i = 0 ; i < sequence_amount ; i++) {
@@ -220,16 +216,22 @@ Kindergarten::Kindergarten(Sequence** init_sequences, int sequence_amount, doubl
 }
 
 // επιλέγονται τυχαία μαθητές να κάνουν αταξίες, οπότε έπειτα γίνονται οι απαραίτητες διαδικασίες
-void Kindergarten::cause_mess() {
-    const int messiness_chance = 5;
+void Supersequence::cause_mess() {
+    const int messiness_chance = 5; // πιθανότητα αταξίας (~1/messiness_chance άτακτοι)
+
+    // αρχικοποίηση δομής που κρατά το πλήθος των ατάκτων ανά ακολουθία
     int messy_amount[size];
     for (int i = 0 ; i < size ; i++) {
         messy_amount[i] = 0;
     }
+
+    // αρχικοποίηση δομής που κρατά το αν υπάρχουν πάνω από τρία διαδοχικά άττακτα ζευγάρια στην ακολουθία
     bool enough_continuous[size];
     for (int i = 0 ; i < size ; i++) {
         enough_continuous[i] = false;
     }
+
+    // επιλογή τυχαίων μαθητών
     for (int i = 0 ; i < size ; i++) {
         int continuous_messy = 0;
         for (int j = 0 ; j < sequences[i]->get_size() ; j++) {
@@ -261,15 +263,17 @@ void Kindergarten::cause_mess() {
             }
         }
     }
-    for (int i = 0 ; i < size ; i++) {
+
+    // μετακίνηση και όλες οι σχετικές διαδικασίες
+    for (int i = 0 ; i < size ; i++) {  // για κάθε ακολουθία
         int sequence_size = sequences[i]->get_size();
-        if (messy_amount[i] <= 2) {
+        if (messy_amount[i] <= 2) { // πρώτη περίπτωση
             int other_pair_position;
-            for (int j = 0 ; j < sequence_size ; j++) {
+            for (int j = 0 ; j < sequence_size ; j++) { // για κάθε ζευγάρι
                 Pair* curr_pair = sequences[i]->get_pair(j);
                 Student* male = curr_pair->get_student(true);
                 Student* female = curr_pair->get_student(false);
-                if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {
+                if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {   // αν υπάρχει άτακτος
                     cout << "Students being messy:" << endl;
                     if ((male != NULL) && male->get_messy()) {
                         male->set_messy(false);
@@ -305,15 +309,15 @@ void Kindergarten::cause_mess() {
                 }
             }
         }
-        else if (!enough_continuous[i]) {
+        else if (!enough_continuous[i]) {   // δεύτερη περίπτωση
             int other_sequence_position = (i < (size - 1)) ? i + 1 : 0;
             int other_messiness = 1 + (messy_amount[other_sequence_position] > 2);
             int other_sequence_size = sequences[other_sequence_position]->get_size();
-            for (int j = 0 ; j < sequence_size ; j++) {
+            for (int j = 0 ; j < sequence_size ; j++) { // για κάθε ζευγάρι
                 Pair* curr_pair = sequences[i]->get_pair(j);
                 Student* male = curr_pair->get_student(true);
                 Student* female = curr_pair->get_student(false);
-                if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {
+                if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {   // αν υπάρχει άτακτος
                     cout << "Students being messy:" << endl;
                     if ((male != NULL) && male->get_messy()) {
                         male->set_messy(false);
@@ -346,12 +350,12 @@ void Kindergarten::cause_mess() {
                 }
             }
         }
-        else {
-            for (int j = 0 ; j < sequence_size ; j++) {
+        else {  // τρίτη περίπτωση
+            for (int j = 0 ; j < sequence_size ; j++) { // για κάθε ζευγάρι
                 Pair* curr_pair = sequences[i]->get_pair(j);
                 Student* male = curr_pair->get_student(true);
                 Student* female = curr_pair->get_student(false);
-                if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {
+                if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {   // αν υπάρχει άτακτος
                     cout << "Students being messy:" << endl;
                     if ((male != NULL) && male->get_messy()) {
                         male->set_messy(false);
@@ -371,7 +375,6 @@ void Kindergarten::cause_mess() {
                         }
                     }
                     int other_messiness = 1 + (messy_amount[other_sequence_position] > 2);
-                    cout << other_messiness << "-----------------------------------------" << endl;
                     int other_pair_position = rand() % sequences[other_sequence_position]->get_size();
                     Pair* other_pair = sequences[other_sequence_position]->get_pair(other_pair_position);
                     Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
@@ -397,7 +400,7 @@ void Kindergarten::cause_mess() {
 }
 
 // εκτυπώνει όλες τις ακολουθίες ζευγαριών στον παιδικό σταθμό
-void Kindergarten::print() const {
+void Supersequence::print() const {
     for (int i = 0 ; i < size ; i++) {
         cout << "Sequence " << i + 1 << ":" << endl;
         sequences[i]->print(tquiet, tmessy);

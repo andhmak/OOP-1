@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     // αρχικοποίηση της rand()
     srand(time(NULL));
 
-    // δημιουργλια μαθητών, με τυχαία ονόματα
+    // δημιουργία μαθητών, με τυχαία ονόματα
     const int student_num = cclass*18;
     Student* students[student_num];
     for (int i = 0 ; i < 3 ; i++) {
@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // δημιουργλια δασκάλων, με τυχαία ονόματα
+    // δημιουργία δασκάλων, με τυχαία ονόματα
     Teacher* teachers[18];
     for (int i = 0 ; i < 18 ; i++) {
         teachers[i] = new Teacher(names[rand() % 48], i / 6, i % 6);
