@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include "names.h"
 #include "kindergarten.h"
-////say empty spaces can be moved
+
 using namespace std;
 
 int main(int argc, char* argv[]) {
