@@ -316,12 +316,14 @@ bool School::enter(Student** students, int size) {
         cout << students[i]->get_name() << " enters school!" << endl;
     }
     int ammount_in = 0;
-    while (true) {
+    while (true) {  // γίνεται διαρκώς η εξής διαδικασία
         Student* to_enter;
         bool stagnated = true;
+        // μπαίνουν στην αυλή όσοι χωράνε
         for ( ; (yard.full() == false) && (ammount_in != size) ; ammount_in++) {
             yard.enter(*students[ammount_in]);
         }
+        // μετά μπαίνουν όσοι χωράνε στο κλιμακοστάσια
         while (stairs.full() == false) {
             to_enter = yard.exit();
             if (to_enter == NULL) {
@@ -330,6 +332,7 @@ bool School::enter(Student** students, int size) {
             stairs.enter(*to_enter);
             stagnated = false;
         }
+        // μετά όσοι χωράνε στους ορόφους
         for (int i = 0 ; i < 3 ; i++) {
             while (floors[i]->can_fit()) {
                 to_enter = stairs.exit(i);
@@ -340,6 +343,7 @@ bool School::enter(Student** students, int size) {
                 stagnated = false;
             }
         }
+        // μέχρι να μην κινείται κανείς
         if (stagnated) {
             return ammount_in == size;
         }
