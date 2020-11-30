@@ -208,7 +208,7 @@ Supersequence::Supersequence(Sequence** init_sequences, int sequence_amount, dou
 
 // επιλέγονται τυχαία μαθητές να κάνουν αταξίες, οπότε έπειτα γίνονται οι απαραίτητες διαδικασίες
 void Supersequence::cause_mess() {
-    const int messiness_chance = 5; // πιθανότητα αταξίας (~1/messiness_chance άτακτοι)
+    const int messiness_chance = 5; // πιθανότητα αταξίας (1/messiness_chance)
 
     // αρχικοποίηση δομής που κρατά το πλήθος των ατάκτων ανά ακολουθία
     int messy_amount[size];

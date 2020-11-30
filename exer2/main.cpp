@@ -34,18 +34,18 @@ int main(int argc, char* argv[]) {
     Student* students[k][21];
     for (int i = 0 ; i < k ; i++) {
         if (i % 2) {    // εναλλάξ σε κάθε τμήμα υπάρχει ένα παραπάνω κορίτσι
-            for (int j = 0 ; j < 10 ; j++) {
+            for (char j = 0 ; j < 10 ; j++) {
                 students[i][j] = new Student(male_names[rand() % 24], i, true);
             }
-            for (int j = 10 ; j < 21 ; j++) {
+            for (char j = 10 ; j < 21 ; j++) {
                 students[i][j] = new Student(female_names[rand() % 24], i, false);
             }
         }
         else {          // ή ένα παραπάνω αγόρι
-            for (int j = 0 ; j < 11 ; j++) {
+            for (char j = 0 ; j < 11 ; j++) {
                 students[i][j] = new Student(male_names[rand() % 24], i, true);
             }
-            for (int j = 11 ; j < 21 ; j++) {
+            for (char j = 11 ; j < 21 ; j++) {
                 students[i][j] = new Student(female_names[rand() % 24], i, false);
             }
         }
