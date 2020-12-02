@@ -323,7 +323,7 @@ bool School::enter(Student** students, int size) {
         for ( ; (yard.full() == false) && (ammount_in != size) ; ammount_in++) {
             yard.enter(*students[ammount_in]);
         }
-        // μετά μπαίνουν όσοι χωράνε στο κλιμακοστάσια
+        // μετά μπαίνουν όσοι χωράνε στο κλιμακοστάσιο
         while (stairs.full() == false) {
             to_enter = yard.exit();
             if (to_enter == NULL) {
