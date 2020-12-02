@@ -10,11 +10,11 @@ using namespace std;
 // Συναρτήσεις της Pair
 
 // επιστρέφει τον μαθητή του φύλου που δίνεται σαν όρισμα
-Student* Pair::get_student(bool male) const {
-    if ((first != NULL) && (first->is_male() == male)) {
+Student* Sequence::Pair::get_student(bool male) const {
+    if ((first != NULL) && (first->male == male)) {
         return first;
     }
-    else if ((second != NULL) && (second->is_male() == male)) {
+    else if ((second != NULL) && (second->male == male)) {
         return second;
     }
     else {
@@ -25,7 +25,7 @@ Student* Pair::get_student(bool male) const {
 // εφαρμόζεται σε μη πλήρες ζευγάρι και δέχεται μη πλήρες ζευγάρι, το δεύτερο ζευγάρι πρέπει να έχει δεσμευτεί στον σωρό 
 // τα ενώνει και επιστρέφει δείκτη στο νέο, με τον μαθητή του πρώτου ζευγαριού να βρίσκεται στην πρώτη θέση του νέου ζευγαριού
 // (οι προϋποθέσεις χρήσης της είναι σχετικά πολύπλοκες αλλά χρησιμοποιείται ελεγχόμενα από συναρτήσεις της Kindergarten, όχι από τον χρήστη)
-Pair* Pair::merge(Pair* other) {
+Sequence::Pair* Sequence::Pair::merge(Pair* other) {
     if (this->first == NULL) {  // ο μαθητής του πρώτου ζευγαριού πρέπει να βρίσκεται στην πρώτη θέση
         this->first = this->second;
     }
@@ -40,15 +40,15 @@ Pair* Pair::merge(Pair* other) {
 }
 
 // αντιμεταθέτει τους μαθητές του φίλου που ορίζεται, μεταξύ των ζευγαριών this και other
-void Pair::swap(Pair* other, bool male) {
+void Sequence::Pair::swap(Pair* other, bool male) {
     Student *temp, **first_to_swap, **second_to_swap;
-    if (((this->first != NULL) && (this->first->is_male() == male)) || ((this->first == NULL) && (this->second->is_male() != male))) {
+    if (((this->first != NULL) && (this->first->male == male)) || ((this->first == NULL) && (this->second->male != male))) {
         first_to_swap = &this->first;
     }
     else {
         first_to_swap = &this->second;
     }
-    if (((other->first != NULL) && (other->first->is_male() == male)) || ((other->first == NULL) && (other->second->is_male() != male))) {
+    if (((other->first != NULL) && (other->first->male == male)) || ((other->first == NULL) && (other->second->male != male))) {
         second_to_swap = &other->first;
     }
     else {
@@ -60,7 +60,7 @@ void Pair::swap(Pair* other, bool male) {
 }
 
 // εκτυπώνει την θέση στην ακολουθία (position) και τους μαθητές του ζεύγους
-void Pair::print(int position) const {
+void Sequence::Pair::print(int position) const {
     cout << "Position " << position + 1 << ":" << endl;
     if (first != NULL) {
         first->print();
@@ -87,14 +87,14 @@ Sequence::Sequence(Student** students, int student_amount)
     for (int i = 0 ; i < size ; i++) {
         Student *male = NULL, *female = NULL;
         for ( ; j < student_amount ; j++) {
-            if (students[j]->is_male()) {
+            if (students[j]->male) {
                 male = students[j];
                 j++;
                 break;
             }
         }
         for ( ; k < student_amount ; k++) {
-            if (!students[k]->is_male()) {
+            if (students[k]->male == false) {
                 female = students[k];
                 k++;
                 break;
@@ -118,24 +118,12 @@ Sequence::~Sequence() {
 }
 
 // αφαιρεί το τελευταίο ζευγάρι από την ακολουθία και απιστρέφει δείκτη σε αυτό
-Pair* Sequence::trim() {
+// (δεν αντιγράφει τον πίνακα ζευγαριών, αλλά χαραμίζει τον χώρο ενός δείκτη,
+// που θεωρώ αποδεκτό προκειμένουν να υπάρχει χρονική βελτίωση)
+Sequence::Pair* Sequence::trim() {
     size--;
     return pairs[size];
 }
-
-/*
-Pair* Pair::trim_space_efficient() {
-    Pair** new_pairs = new Pair*[size - 1];
-    for (int i = 0 ; i < size - 1 ; i++) {
-        new_pairs[i] = pairs[i];
-    }
-    Pair* excess = pairs[size - 1];
-    delete[] pairs;
-    pairs = new_pairs;
-    size--;
-    return excess;
-}
-*/
 
 // προσθέτει τα ζευγάρια που δίνονται στο τέλος της ακολουθίας
 void Sequence::append(Pair** extra_pairs, int extra_amount) {
@@ -176,11 +164,11 @@ Supersequence::Supersequence(Sequence** init_sequences, int sequence_amount, dou
     }
     int extra_pair_amount = (extra_males < extra_females) ? extra_males : extra_females;
     if (extra_pair_amount != 0) {
-        Pair* extra_pairs[extra_pair_amount];
+        Sequence::Pair* extra_pairs[extra_pair_amount];
         bool male_first = !sequences[0]->get_last_full_pair()->male_first();
         int j = 0, k = 0;
         for (int i = 0 ; i < extra_pair_amount ; i++, male_first = !male_first) {
-            Pair *male, *female;
+            Sequence::Pair *male, *female;
             for ( ; j < sequence_amount ; j++) {
                 if (sequences[j]->excess_male()) {
                     male = sequences[j]->trim();
@@ -225,24 +213,24 @@ void Supersequence::cause_mess() {
     // επιλογή τυχαίων μαθητών
     for (int i = 0 ; i < size ; i++) {
         int continuous_messy = 0;
-        for (int j = 0 ; j < sequences[i]->get_size() ; j++) {
+        for (int j = 0 ; j < sequences[i]->size ; j++) {
             if (!(rand() % messiness_chance)) { // κάθε ζευγάρι έχει μια πιθανότητα να είναι άτακτο
-                Pair* curr_pair = sequences[i]->get_pair(j);
+                Sequence::Pair* curr_pair = sequences[i]->pairs[j];
                 continuous_messy++;
                 messy_amount[i]++;
                 if (curr_pair->only_male()) {
-                    curr_pair->get_student(true)->set_messy(true);
+                    curr_pair->get_student(true)->messy = true;
                 }
                 else if (curr_pair->only_female()) {
-                    curr_pair->get_student(false)->set_messy(true);
+                    curr_pair->get_student(false)->messy = true;
                 }
                 else {
                     if (rand() % 2) {   // και 1/2 πιθανότητα να είναι και οι δύο μαθητές άτακτοι
-                        curr_pair->get_student(true)->set_messy(true);
-                        curr_pair->get_student(false)->set_messy(true);
+                        curr_pair->get_student(true)->messy = true;
+                        curr_pair->get_student(false)->messy = true;
                     }
                     else {
-                        curr_pair->get_student(rand() % 2)->set_messy(true);
+                        curr_pair->get_student(rand() % 2)->messy = true;
                     }
                 }
             }
@@ -257,25 +245,25 @@ void Supersequence::cause_mess() {
 
     // μετακίνηση και όλες οι σχετικές διαδικασίες
     for (int i = 0 ; i < size ; i++) {  // για κάθε ακολουθία
-        int sequence_size = sequences[i]->get_size();
+        int sequence_size = sequences[i]->size;
         if (messy_amount[i] <= 2) { // πρώτη περίπτωση
             for (int j = 0 ; j < sequence_size ; j++) { // για κάθε ζευγάρι
-                Pair* curr_pair = sequences[i]->get_pair(j);
+                Sequence::Pair* curr_pair = sequences[i]->pairs[j];
                 Student* male = curr_pair->get_student(true);
                 Student* female = curr_pair->get_student(false);
-                if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {   // αν υπάρχει άτακτος
+                if (((male != NULL) && male->messy) || ((female != NULL) && female->messy)) {   // αν υπάρχει άτακτος
                     cout << "Students being messy:" << endl;
                     // για το ίδιο το ζευγάρι
                     // αν είναι άτακτο το αγόρι γίνονται οι κατάλληλες διαδικασίες
-                    if ((male != NULL) && male->get_messy()) {
-                        male->set_messy(false);     // σταματάει να είναι άτακτο
-                        sequences[male->get_classroom_id()]->increase_messiness(1); // αυξάνει κατά ένα την αταξία του τμήματός του
+                    if ((male != NULL) && male->messy) {
+                        male->messy = false;     // σταματάει να είναι άτακτο
+                        sequences[male->classroom_id]->messiness++; // αυξάνει κατά ένα την αταξία του τμήματός του
                         male->print();              // τυπώνεται
                     }
                     // και αν είναι το κορίτσι
-                    if ((female != NULL) && female->get_messy()) {
-                        female->set_messy(false);
-                        sequences[female->get_classroom_id()]->increase_messiness(1);
+                    if ((female != NULL) && female->messy) {
+                        female->messy = false;
+                        sequences[female->classroom_id]->messiness++;
                         female->print();
                     }
 
@@ -288,18 +276,18 @@ void Supersequence::cause_mess() {
                             break;
                         }
                     }
-                    Pair* other_pair = sequences[i]->get_pair(other_pair_position);
+                    Sequence::Pair* other_pair = sequences[i]->pairs[other_pair_position];
                     Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
                     // γίνονται οι διαδικασίες για το άλλο αγόρι αν είναι άτακτο
-                    if ((other_male != NULL) && (other_male->get_messy())) {
-                        other_male->set_messy(false);
-                        sequences[other_male->get_classroom_id()]->increase_messiness(1);
+                    if ((other_male != NULL) && other_male->messy) {
+                        other_male->messy = false;
+                        sequences[other_male->classroom_id]->messiness++;
                         other_male->print();
                     }
                     // και για το άλλο κορίτσι
-                    if ((other_female != NULL) && (other_female->get_messy())) {
-                        other_female->set_messy(false);
-                        sequences[other_female->get_classroom_id()]->increase_messiness(1);
+                    if ((other_female != NULL) && other_female->messy) {
+                        other_female->messy = false;
+                        sequences[other_female->classroom_id]->messiness++;
                         other_female->print();
                     }
 
@@ -315,41 +303,41 @@ void Supersequence::cause_mess() {
             int other_sequence_position = (i < (size - 1)) ? i + 1 : 0;             // εντοπίζεται η επόμενη ακολουθία
             int other_messiness = 1 + (messy_amount[other_sequence_position] > 2);  // βρίσκεται ο τύπος αταξίας άλλης ακολουθίας
             for (int j = 0 ; j < sequence_size ; j++) { // για κάθε ζευγάρι
-                Pair* curr_pair = sequences[i]->get_pair(j);
+                Sequence::Pair* curr_pair = sequences[i]->pairs[j];
                 Student* male = curr_pair->get_student(true);
                 Student* female = curr_pair->get_student(false);
-                if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {   // αν υπάρχει άτακτος
+                if (((male != NULL) && male->messy) || ((female != NULL) && female->messy)) { // αν υπάρχει άτακτος
                     cout << "Students being messy:" << endl;
                     // για το ίδιο το ζευγάρι
                     // αν είναι άτακτο το αγόρι γίνονται οι κατάλληλες διαδικασίες
-                    if ((male != NULL) && male->get_messy()) {
-                        male->set_messy(false);     // σταματάει να είναι άτακτο
-                        sequences[male->get_classroom_id()]->increase_messiness(2); // αυξάνει κατά δύο την αταξία του τμήματός του
+                    if ((male != NULL) && male->messy) {
+                        male->messy = false;        // σταματάει να είναι άτακτο
+                        sequences[male->classroom_id]->messiness += 2;  // αυξάνει κατά δύο την αταξία του τμήματός του
                         male->print();              // τυπώνεται
                     }
                     // και αν είναι το κορίτσι
-                    if ((female != NULL) && female->get_messy()) {
-                        female->set_messy(false);
-                        sequences[female->get_classroom_id()]->increase_messiness(2);
+                    if ((female != NULL) && female->messy) {
+                        female->messy = false;
+                        sequences[female->classroom_id]->messiness += 2;
                         female->print();
                     }
 
                     // για το άλλο ζευγάρι
                     // επιλέγεται τυχαία ένα ζευγάρι στην επόμενη ακολουθία
-                    int other_pair_position = rand() % sequences[other_sequence_position]->get_size();
-                    Pair* other_pair = sequences[other_sequence_position]->get_pair(other_pair_position);
+                    int other_pair_position = rand() % sequences[other_sequence_position]->size;
+                    Sequence::Pair* other_pair = sequences[other_sequence_position]->pairs[other_pair_position];
                     Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
                     // γίνονται οι διαδικασίες για το άλλο αγόρι αν είναι άτακτο
-                    if ((other_male != NULL) && (other_male->get_messy())) {
-                        other_male->set_messy(false);
+                    if ((other_male != NULL) && other_male->messy) {
+                        other_male->messy = false;
                         other_male->print();
-                        sequences[other_male->get_classroom_id()]->increase_messiness(other_messiness);
+                        sequences[other_male->classroom_id]->messiness += other_messiness;
                     }
                     // και για το άλλο κορίτσι
-                    if ((other_female != NULL) && (other_female->get_messy())) {
-                        other_female->set_messy(false);
+                    if ((other_female != NULL) && other_female->messy) {
+                        other_female->messy = false;
                         other_female->print();
-                        sequences[other_female->get_classroom_id()]->increase_messiness(other_messiness);
+                        sequences[other_female->classroom_id]->messiness += other_messiness;
                     }
 
                     curr_pair->swap(other_pair, true);  // γίνεται η αντιμετάθεση
@@ -364,22 +352,22 @@ void Supersequence::cause_mess() {
         }
         else {  // τρίτη περίπτωση
             for (int j = 0 ; j < sequence_size ; j++) { // για κάθε ζευγάρι
-                Pair* curr_pair = sequences[i]->get_pair(j);
+                Sequence::Pair* curr_pair = sequences[i]->pairs[j];
                 Student* male = curr_pair->get_student(true);
                 Student* female = curr_pair->get_student(false);
-                if (((male != NULL) && male->get_messy()) || ((female != NULL) && female->get_messy())) {   // αν υπάρχει άτακτος
+                if (((male != NULL) && male->messy) || ((female != NULL) && female->messy)) {   // αν υπάρχει άτακτος
                     cout << "Students being messy:" << endl;
                     // για το ίδιο το ζευγάρι
                     // αν είναι άτακτο το αγόρι γίνονται οι κατάλληλες διαδικασίες
-                    if ((male != NULL) && male->get_messy()) {
-                        male->set_messy(false);     // σταματάει να είναι άτακτο
-                        sequences[male->get_classroom_id()]->increase_messiness(2); // αυξάνει κατά δύο την αταξία του τμήματός του
+                    if ((male != NULL) && male->messy) {
+                        male->messy = false;     // σταματάει να είναι άτακτο
+                        sequences[male->classroom_id]->messiness += 2;    // αυξάνει κατά δύο την αταξία του τμήματός του
                         male->print();              // τυπώνεται
                     }
                     // και αν είναι το κορίτσι
-                    if ((female != NULL) && female->get_messy()) {
-                        female->set_messy(false);
-                        sequences[female->get_classroom_id()]->increase_messiness(2);
+                    if ((female != NULL) && female->messy) {
+                        female->messy = false;
+                        sequences[female->classroom_id]->messiness += 2;
                         female->print();
                     }
 
@@ -393,20 +381,20 @@ void Supersequence::cause_mess() {
                         }
                     }
                     int other_messiness = 1 + (messy_amount[other_sequence_position] > 2);  // βρίσκεται ο τύπος αταξίας άλλης ακολουθίας
-                    int other_pair_position = rand() % sequences[other_sequence_position]->get_size();  // επιλέγεται τυχαία το άλλο ζευγάρι
-                    Pair* other_pair = sequences[other_sequence_position]->get_pair(other_pair_position);
+                    int other_pair_position = rand() % sequences[other_sequence_position]->size;  // επιλέγεται τυχαία το άλλο ζευγάρι
+                    Sequence::Pair* other_pair = sequences[other_sequence_position]->pairs[other_pair_position];
                     Student *other_male = other_pair->get_student(true), *other_female = other_pair->get_student(false);
                     // γίνονται οι διαδικασίες για το άλλο αγόρι αν είναι άτακτο
-                    if ((other_male != NULL) && (other_male->get_messy())) {
-                        other_male->set_messy(false);
+                    if ((other_male != NULL) && other_male->messy) {
+                        other_male->messy = false;
                         other_male->print();
-                        sequences[other_male->get_classroom_id()]->increase_messiness(other_messiness);
+                        sequences[other_male->classroom_id]->messiness += other_messiness;
                     }
                     // και για το άλλο κορίτσι
-                    if ((other_female != NULL) && (other_female->get_messy())) {
-                        other_female->set_messy(false);
+                    if ((other_female != NULL) && other_female->messy) {
+                        other_female->messy = false;
                         other_female->print();
-                        sequences[other_female->get_classroom_id()]->increase_messiness(other_messiness);
+                        sequences[other_female->classroom_id]->messiness += other_messiness;
                     }
 
                     curr_pair->swap(other_pair, true);  // γίνεται η αντιμετάθεση
