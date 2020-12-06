@@ -12,7 +12,7 @@ enum area {
 class Student {
     std::string name;       // όνομα του μαθητή
     short floor_num;        // αριθμός οροόφου όπου βρίσκεται η τάξη/προορισμός του
-    short classroom_num;        // αριθμός/θέση της τάξης/προορισμού του στον όροφο
+    short classroom_num;    // αριθμός/θέση της τάξης/προορισμού του στον όροφο
     enum area position;     // χώρος στον οποίο βρίσκεται μια συγκεκριμένη στιγμή
     public:
         Student(const char* init_name, short init_floor_num, short init_classroom_num); // Constructor
@@ -20,22 +20,22 @@ class Student {
         void set_position(enum area new_position) { position = new_position; }      // Mutator
         std::string get_name() const { return name; }                               // +
         short get_floor_num() const { return floor_num; }                           // |  Accessors
-        short get_classroom_num() const { return classroom_num; }                           // +
+        short get_classroom_num() const { return classroom_num; }                   // +
         void print() const { std::cout << name << std::endl; }                      // Συνάρτηση εκτύπωσης (εκτυπώνει το όνομα)
 };
 
 // Κλάση που αναπαριστά έναν δάσκαλο
 class Teacher {
-    std::string name;   // όνομα του δασκάλου
-    short floor_num;    // αριθμός οροόφου όπου βρίσκεται η τάξη/προορισμός του
+    std::string name;       // όνομα του δασκάλου
+    short floor_num;        // αριθμός οροόφου όπου βρίσκεται η τάξη/προορισμός του
     short classroom_num;    // αριθμός/θέση της τάξης/προορισμού του στον όροφο
-    bool in;            // αν βρίσκεται μέσα στην τάξη ή όχι
+    bool in;                // αν βρίσκεται μέσα στην τάξη ή όχι
     public:
-        Teacher(const char* init_name, short init_floor_num, short init_classroom_num);     // Constructor
+        Teacher(const char* init_name, short init_floor_num, short init_classroom_num); // Constructor
         ~Teacher();                                                                     // Destructor (εκτυπώνει και τα δεδομένα του δασκάλου)
         void set_in() { in = true; }                                                    // Mutator
         short get_floor_num() const { return floor_num; }                               // +
-        short get_classroom_num() const { return classroom_num; }                               // |  Accessors
+        short get_classroom_num() const { return classroom_num; }                       // |  Accessors
         bool is_in() const { return in; }                                               // +
         void print() const { std::cout << "The teacher is: " << name << std::endl; }    // Συνάρτηση εκτύπωσης (εκτυπώνει το όνομα)
 };
